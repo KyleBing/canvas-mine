@@ -110,6 +110,8 @@ class CanvasMe {
         let canvasLayer = document.getElementById('canvasLayer')
         let ctx = canvasLayer.getContext('2d')
 
+        ctx.clearRect(0, 0, this.frame.width, this.frame.height)
+
         ctx.imageSmoothingEnabled = true
 
         ctx.strokeStyle = 'black'
@@ -127,8 +129,10 @@ class CanvasMe {
         // draw ItemName
         let offsetY = 200
         let offsetX = 800
-        let cornerRadius = 80
-
+        let cornerRadius = 100 - this.timeLine * 2
+        if (cornerRadius < 60){
+            cornerRadius = 60
+        }
         this.attaches.forEach((item, index) => {
             let itemCenter = {
                 x: this.center.x + offsetX,
@@ -138,9 +142,16 @@ class CanvasMe {
             drawArcLine(ctx, this.center, itemCenter, cornerRadius, 4)
         })
 
+        // 显示时间标线序号
+        ctx.fillStyle = 'black'
+        ctx.font = '20px sans-serf'
+        ctx.clearRect(10, this.frame.height - 53, 100, 30)
+        ctx.fillText(`${this.timeLine}`, 20, this.frame.height - 30)
+
 
         if (this.isPlaying) {
             window.requestAnimationFrame(() => {
+                ctx.clearRect(0,0,this.frame.width, this.frame.height)
                 this.draw()
             })
         }
