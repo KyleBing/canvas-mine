@@ -76,11 +76,6 @@ class CanvasMe {
         canvasLayer.style.top = '0'
         canvasLayer.style.left = '0'
 
-        // fill background
-        let ctx = canvasLayer.getContext('2d')
-        ctx.fillStyle = this.bgColor
-        // ctx.rect(0,0,this.frame.width, this.frame.height)
-        ctx.fill()
     }
 
     init(){
@@ -88,10 +83,9 @@ class CanvasMe {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: this.frame.width / 2,
+            x: this.frame.width / 3,
             y: this.frame.height / 2
         }
-
 
         let canvasLayer = document.createElement("canvas")
         this.updateFrameAttribute(canvasLayer)
@@ -110,13 +104,18 @@ class CanvasMe {
         let canvasLayer = document.getElementById('canvasLayer')
         let ctx = canvasLayer.getContext('2d')
 
-        ctx.clearRect(0, 0, this.frame.width, this.frame.height)
+        // fill background
+        ctx.fillStyle = this.bgColor
+        ctx.rect(0,0,this.frame.width, this.frame.height)
+        ctx.fill()
 
         ctx.imageSmoothingEnabled = true
 
         ctx.strokeStyle = 'black'
         ctx.fillStyle = 'black'
         ctx.font = '30px 微软雅黑'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
         ctx.fillText(this.name, this.center.x, this.center.y - 10)
 
 
@@ -129,17 +128,21 @@ class CanvasMe {
         // draw ItemName
         let offsetY = 200
         let offsetX = 800
-        let cornerRadius = 100 - this.timeLine * 2
-        if (cornerRadius < 60){
-            cornerRadius = 60
-        }
+        let cornerRadius = 100
         this.attaches.forEach((item, index) => {
             let itemCenter = {
                 x: this.center.x + offsetX,
                 y: this.center.y - (offsetY * index)
             }
+            ctx.font = '40px 微软雅黑'
+            ctx.textAlign = 'left'
+            ctx.textBaseline = 'middle'
             ctx.fillText(item.name,itemCenter.x + 10, itemCenter.y)
-            drawArcLine(ctx, this.center, itemCenter, cornerRadius, 4)
+            let startPoint = {
+                x: this.center.x + radius,
+                y: this.center.y
+            }
+            drawArcLine(ctx, startPoint , itemCenter, cornerRadius, 3)
         })
 
         // 显示时间标线序号
@@ -183,6 +186,7 @@ function drawArcLine(ctx, pointA, pointD, radius, lineWidth){
         radius
     )
     ctx.lineTo(pointD.x, pointD.y)
+    ctx.lineWidth = lineWidth
     ctx.stroke()
 }
 
