@@ -30,7 +30,7 @@ class CanvasMe {
             gapBranchY: 30, // 每个分支的间隔
             mainTopic: {
                 strokeStyle: '#000',
-                lineWidth: 3,
+                lineWidth: 5,
                 radius: 120, // 中心元素的圆形 radius
                 name: name, // 主题名
                 font: '40px 微软雅黑'
@@ -40,8 +40,8 @@ class CanvasMe {
                 gapY: 200,
                 radius: 40,
                 strokeStyle: '#333',
-                lineWidth: 3,
-                dotSize: 4,
+                lineWidth: 5,
+                dotSize: 0,
                 font: '28px 微软雅黑'
             },
             level2: {
@@ -50,8 +50,8 @@ class CanvasMe {
                 radius: 5,
                 strokeStyle: '#666',
                 lineWidth: 2,
-                dotSize: 2,
-                font: '22px 微软雅黑',
+                dotSize: 0,
+                font: '20px 微软雅黑',
             },
         }
 
@@ -124,7 +124,7 @@ class CanvasMe {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: this.frame.width / 3,
+            x: 200,
             y: this.frame.height / 2
         }
 
@@ -133,11 +133,35 @@ class CanvasMe {
         document.documentElement.append(canvasLayer)
 
 
-        let countItems = 0
+        let countItems = 0 // 子元素总个数
         let lastYPos = 100
+
+
+
         this.attaches.forEach(branchLv1 =>{
             countItems = countItems + branchLv1.children.length
         })
+
+        this.attaches = this.attaches.sort((a,b) => b.children.length - a.children.length)
+        let arrayLeft = []
+        let countLeft = 0
+        let arrayRight = []
+        let countRight = 0
+
+        // 大约均分两部分
+        this.attaches.forEach(item => {
+            if (countLeft > countRight){
+                arrayRight.push(item)
+                countRight = countRight + item.children.length
+            } else {
+                arrayLeft.push(item)
+                countLeft = countLeft + item.children.length
+            }
+        })
+
+        console.log(countLeft,arrayLeft,countRight,arrayRight)
+
+
         this.option.gapItemY = ( this.frame.height - 100 * 2  - (this.attaches.length - 1) * this.option.gapBranchY) / countItems
 
         let heightAmount = 0
@@ -148,8 +172,6 @@ class CanvasMe {
             lastYPos = lastYPos + branchLv1.height + this.option.gapBranchY
             branchLv1.midLineY = lastYPos - branchLv1.height / 2
         })
-
-        this.attaches.sort()
 
 
 
@@ -167,6 +189,21 @@ class CanvasMe {
         let ctx = canvasLayer.getContext('2d')
         ctx.clearRect(0,0,this.frame.width, this.frame.height)
 
+        ctx.save()
+        // main topic
+        ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)
+        ctx.arc(this.center.x, this.center.y,this.option.mainTopic.radius,0,Math.PI * 2,)
+        ctx.strokeStyle = this.option.mainTopic.strokeStyle
+        // ctx.shadowColor = 'rgba(0,0,0,0.8)'
+        // ctx.shadowBlur = 10
+        // ctx.shadowOffsetX = 2
+        // ctx.shadowOffsetY = 2
+        ctx.fillStyle = 'white'
+        ctx.lineWidth = this.option.mainTopic.lineWidth
+        ctx.fill()
+        ctx.stroke()
+        ctx.restore()
+
 
         ctx.strokeStyle = 'black'
         ctx.fillStyle = 'black'
@@ -174,12 +211,6 @@ class CanvasMe {
         ctx.font =  this.option.mainTopic.font
         ctx.textBaseline = 'middle'
         ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
-
-        ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)
-        ctx.arc(this.center.x, this.center.y,this.option.mainTopic.radius,0,Math.PI * 2,)
-        ctx.lineWidth = this.option.mainTopic.lineWidth
-        ctx.strokeStyle = this.option.mainTopic.strokeStyle
-        ctx.stroke()
 
         this.attaches.forEach((item1Level, index1) => {
             let branchHeight = this.option.gapItemY * item1Level.children.length
@@ -320,6 +351,7 @@ function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor, lineRati
     ctx.save()
     ctx.lineCap = 'round'
     ctx.beginPath()
+    ctx.lineJoin = 'round'
     ctx.moveTo(pointA.x, pointA.y)
     ctx.arcTo(
         pointA.x + (pointD.x - pointA.x) * lineRatio,
