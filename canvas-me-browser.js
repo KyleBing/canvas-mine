@@ -23,11 +23,36 @@ class CanvasMe {
             x: 600,
             y: 150
         }
-        this.centerRrcRadius = 150 // 中心元素的圆形 radius
-        this.cornorRadius = 80  // 线段的圆角大小
+
+        this.option = {
+            lineRatio: 2/3,   // 拆线在什么部位弯折
+            mainTopic: {
+                strokeStyle: '#ccc',
+                lineWidth: 5,
+                radius: 150, // 中心元素的圆形 radius
+                name: name, // 主题名
+            },
+            level1: {
+                gapX: 600,
+                gapY: 200,
+                radius: 80,
+                strokeStyle: '#ccc',
+                lineWidth: 5,
+                dotSize: 5
+            },
+            level2: {
+                gapX: 400,
+                gapY: 200,
+                radius: 20,
+                strokeStyle: '#999',
+                lineWidth: 2,
+                dotSize: 2
+            },
+        }
+
+        this.animationDuration = 10  // 动画多少帧内完成
         this.textWidth = 150 // 文字宽度
         this.bgColor = 'white'
-        this.name = name  // 主题名
         this.attaches = attaches || []  // 分支
 
         this.frame = {
@@ -48,7 +73,7 @@ class CanvasMe {
         this.lastTime = new Date().getTime()
     }
 
-    play(){
+    animationStart(){
         if (this.isPlaying){
 
         } else {
@@ -56,7 +81,7 @@ class CanvasMe {
             this.draw()
         }
     }
-    stop(){
+    animationStop(){
         this.isPlaying = false
     }
 
@@ -117,54 +142,64 @@ class CanvasMe {
         ctx.textAlign = 'center'
         ctx.font = '35px 微软雅黑'
         ctx.textBaseline = 'middle'
-        ctx.fillText(this.name, this.center.x, this.center.y)
+        ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
 
-        ctx.moveTo(this.center.x + this.centerRrcRadius, this.center.y)
-        ctx.arc(this.center.x, this.center.y,this.centerRrcRadius,0,Math.PI * 2,)
-        ctx.lineWidth = 4
+        ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)
+        ctx.arc(this.center.x, this.center.y,this.option.mainTopic.radius,0,Math.PI * 2,)
+        ctx.lineWidth = this.option.mainTopic.lineWidth
+        ctx.strokeStyle = this.option.mainTopic.strokeStyle
         ctx.stroke()
 
-        // draw ItemName
-        let offsetY = 200
-        let offsetX = 600
-
         let middleLineY = this.center.y
-
         this.attaches.forEach((item1Level, index1) => {
-            let center1 = {
-                x: this.center.x + offsetX,
-                y: getYPositionOf(middleLineY,this.attaches.length, offsetY, index1)
+            let endPoint1 = {
+                x: this.center.x + this.option.level1.gapX,
+                y: getYPositionOf(middleLineY,this.attaches.length, this.option.level1.gapY, index1)
             }
-            drawDot(ctx, center1,5,'black')
+            drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
             // text style 1
             ctx.font = '35px 微软雅黑'
             ctx.textBaseline = 'middle'
             ctx.textAlign = 'left'
-            ctx.fillText(item1Level.name,center1.x + 30, center1.y, this.textWidth)
+            ctx.fillText(item1Level.name,endPoint1.x + 30, endPoint1.y, this.textWidth)
 
             let startPoint1 = {
-                x: this.center.x + this.centerRrcRadius,
+                x: this.center.x + this.option.mainTopic.radius,
                 y: this.center.y
             }
-            drawArcLine(ctx, startPoint1, center1, this.cornorRadius, 5, 'black')
+            let cornerRadius1 = 0
+            if (this.timeLine > this.animationDuration){
+                cornerRadius1 = this.option.level1.radius
+            } else {
+                cornerRadius1 = this.option.level1.radius / this.animationDuration * this.timeLine
+            }
+            drawArcLine(ctx, startPoint1, endPoint1, cornerRadius1, this.option.level1.lineWidth, this.option.level1.strokeStyle, this.option.lineRatio)
 
+            this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
             item1Level.children.forEach((item2Level, index2) => {
-                let center2 = {
-                    x: this.center.x + offsetX + offsetX / 2,
-                    y: getYPositionOf(center1.y, item1Level.children.length, offsetY / item1Level.children.length, index2)
+                let endPoint2 = {
+                    x: endPoint1.x + this.option.level2.gapX,
+                    y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.level2.gapY, index2)
                 }
-                drawDot(ctx, center2,1,'#666')
+                drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
                 // text style 2
                 ctx.font = '30px 微软雅黑'
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'left'
-                ctx.fillText(item2Level.name,center2.x + 10, center2.y)
+                ctx.fillText(item2Level.name,endPoint2.x + 10, endPoint2.y)
 
                 let startPoint2 = {
-                    x: center1.x + this.textWidth,
-                    y: center1.y
+                    x: endPoint1.x + this.textWidth,
+                    y: endPoint1.y
                 }
-                drawArcLine(ctx, startPoint2 , center2, 20, 2, '#666')
+                let cornerRadius2 = 0
+                if (this.timeLine > this.animationDuration){
+                    cornerRadius2 = this.option.level2.radius
+                    this.animationStop()
+                } else {
+                    cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
+                }
+                drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.lineWidth, this.option.level2.strokeStyle, this.option.lineRatio)
             })
         })
 
@@ -244,20 +279,21 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
  * @param radius  { Number } 圆角半径
  * @param lineWidth { Number } 线段宽度
  * @param lineColor  { String } 线段颜色
+ * @param lineRatio  { Number } 拆线的部位
  */
-function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor){
+function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor, lineRatio){
     ctx.save()
     ctx.beginPath()
     ctx.moveTo(pointA.x, pointA.y)
     ctx.arcTo(
-        pointA.x + (pointD.x - pointA.x) / 3 * 2,
+        pointA.x + (pointD.x - pointA.x) * lineRatio,
         pointA.y,
-        pointA.x + (pointD.x - pointA.x) / 3 * 2,
+        pointA.x + (pointD.x - pointA.x) * lineRatio,
         pointD.y,
         radius
     )
     ctx.arcTo(
-        pointA.x + (pointD.x - pointA.x) / 3 * 2,
+        pointA.x + (pointD.x - pointA.x) * lineRatio,
         pointD.y,
         pointD.x,
         pointD.y,
