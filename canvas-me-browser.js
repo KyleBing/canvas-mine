@@ -25,19 +25,17 @@ class CanvasMe {
         }
         this.centerRrcRadius = 150 // 中心元素的圆形 radius
         this.cornorRadius = 80  // 线段的圆角大小
-
-
         this.textWidth = 150 // 文字宽度
+        this.bgColor = 'white'
+        this.name = name  // 主题名
+        this.attaches = attaches || []  // 分支
+
         this.frame = {
             width : 1200,
             height: 300,
         }
 
         this.timeLine = 0
-
-        this.bgColor = 'white'
-        this.name = name  // 主题名
-        this.attaches = attaches || []  // 分支
 
         this.init()
 
@@ -85,7 +83,6 @@ class CanvasMe {
         // fill background
         let ctx = canvasLayer.getContext('2d')
         ctx.fillStyle = this.bgColor
-        // ctx.rect(0,0,this.frame.width, this.frame.height)
         ctx.fill()
     }
 
@@ -131,41 +128,47 @@ class CanvasMe {
         let offsetY = 200
         let offsetX = 600
 
-        let gapHole = offsetY * this.attaches.length
         let middleLineY = this.center.y
 
-        this.attaches.forEach((item, index) => {
-            let itemCenter = {
+        this.attaches.forEach((item1Level, index1) => {
+            let center1 = {
                 x: this.center.x + offsetX,
-                y: getYPositionOf(middleLineY,this.attaches.length, offsetY, index)
+                y: getYPositionOf(middleLineY,this.attaches.length, offsetY, index1)
             }
             // drawDot(ctx,itemCenter,10,'orange')
+            // text style 1
             ctx.font = '35px 微软雅黑'
             ctx.textBaseline = 'middle'
             ctx.textAlign = 'left'
-            ctx.fillText(item.name,itemCenter.x + 30, itemCenter.y, this.textWidth)
+            ctx.fillText(item1Level.name,center1.x + 30, center1.y, this.textWidth)
 
-            let startPoint = {
+            let startPoint1 = {
                 x: this.center.x + this.centerRrcRadius,
                 y: this.center.y
             }
-            drawArcLine(ctx, startPoint, itemCenter, this.cornorRadius, 5, 'black')
+            drawArcLine(ctx, startPoint1, center1, this.cornorRadius, 5, 'black')
 
-            item.children.forEach((subItem, subIndex) => {
-                let subItemCenter = {
+            item1Level.children.forEach((item2Level, index2) => {
+                let center2 = {
                     x: this.center.x + offsetX + offsetX / 2,
-                    y: getYPositionOf(itemCenter.y, item.children.length, offsetY / item.children.length, subIndex)
+                    y: getYPositionOf(center1.y, item1Level.children.length, offsetY / item1Level.children.length, index2)
                 }
+                // text style 2
                 ctx.font = '30px 微软雅黑'
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'left'
-                ctx.fillText(subItem.name,subItemCenter.x + 10, subItemCenter.y)
-                drawArcLine(ctx, {x:itemCenter.x + this.textWidth, y: itemCenter.y} , subItemCenter, 20, 3, '#666')
+                ctx.fillText(item2Level.name,center2.x + 10, center2.y)
+
+                let startPoint2 = {
+                    x: center1.x + this.textWidth,
+                    y: center1.y
+                }
+                drawArcLine(ctx, startPoint2 , center2, 20, 3, '#666')
             })
         })
 
+        // 展示 canvas 动画数据
         showAnimationInfo(ctx, this.timeLine, this.frame)
-
 
         if (this.isPlaying) {
             window.requestAnimationFrame(() => {
@@ -177,8 +180,8 @@ class CanvasMe {
 }
 
 /**
- * 显示时间标线序号
- * @param ctx { ctx }
+ * ## 显示时间标线序号
+ * @param ctx
  * @param timeline {''}
  * @param frame {{width, height}}
  */
@@ -193,8 +196,8 @@ function showAnimationInfo(ctx, timeline, frame){
 }
 
 /**
- * 画点
- * @param ctx {ctx}
+ * ## 画点
+ * @param ctx
  * @param center {{x: Number,y: Number}}
  * @param radius {Number}
  * @param color {String}
@@ -209,7 +212,7 @@ function drawDot(ctx, center, radius, color){
 }
 
 /**
- * 获取第 index 个元素的 y 位置
+ * ## 获取第 index 个元素的 y 位置
  * @param middleLineY {{x: Number, y: Number}} 中心线的 y 位置
  * @param itemSize {Number}元素数量
  * @param gap {Number}每个元素之间的间隔
@@ -226,7 +229,7 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
 }
 
 /**
- *  在 a 与 d 点之间线一条带圆角的拆线
+ * ## 在 a 与 d 点之间线一条带圆角的拆线
  * @param ctx canvas.context
  * @param pointA {{x: Number, y: Number}} 起点坐标
  * @param pointD {{x: Number, y: Number}} 末端坐标
