@@ -30,33 +30,33 @@ class CanvasMe {
             gapBranchY: 30, // 每个分支的间隔
             mainTopic: {
                 strokeStyle: '#000',
-                lineWidth: 5,
-                radius: 150, // 中心元素的圆形 radius
+                lineWidth: 3,
+                radius: 120, // 中心元素的圆形 radius
                 name: name, // 主题名
                 font: '40px 微软雅黑'
             },
             level1: {
-                gapX: 600,
+                gapX: 400,
                 gapY: 200,
                 radius: 40,
                 strokeStyle: '#333',
-                lineWidth: 5,
-                dotSize: 3,
-                font: '30px 微软雅黑'
+                lineWidth: 3,
+                dotSize: 4,
+                font: '28px 微软雅黑'
             },
             level2: {
-                gapX: 400,
+                gapX: 300,
                 gapY: 200,
                 radius: 10,
                 strokeStyle: '#666',
                 lineWidth: 2,
-                dotSize: 1,
-                font: '28px 微软雅黑',
+                dotSize: 3,
+                font: '22px 微软雅黑',
             },
         }
 
         this.animationDuration = 10  // 动画多少帧内完成
-        this.textWidth = 200 // 文字宽度
+        this.textWidth = 150 // 文字宽度
         this.bgColor = 'white'
         this.attaches = attaches || []  // 分支
 
@@ -275,7 +275,7 @@ function drawDot(ctx, center, radius, color){
     ctx.arc(center.x, center.y, radius,0, Math.PI * 2 )
     ctx.closePath()
     ctx.fill()
-    ctx.stroke()
+    // ctx.stroke()
     ctx.restore()
 }
 
