@@ -131,11 +131,19 @@ class CanvasMe {
         this.updateFrameAttribute(canvasLayer)
         document.documentElement.append(canvasLayer)
 
+
         let countItems = 0
-        this.attaches.forEach(x =>{
-            countItems = countItems + x.children.length
+        let lastYPos = 100
+        this.attaches.forEach(branchLv1 =>{
+            countItems = countItems + branchLv1.children.length
         })
         this.option.gapY = ( this.frame.height - 100 * 2 ) / countItems
+
+        this.attaches.forEach(branchLv1 => {
+            branchLv1.height = this.option.gapY * branchLv1.children.length
+            lastYPos = lastYPos + branchLv1.height
+            branchLv1.midLineY = lastYPos - branchLv1.height / 2
+        })
 
         this.draw()
 
@@ -165,11 +173,11 @@ class CanvasMe {
         ctx.strokeStyle = this.option.mainTopic.strokeStyle
         ctx.stroke()
 
-        let middleLineY = this.center.y
         this.attaches.forEach((item1Level, index1) => {
+            let branchHeight = this.option.gapY * item1Level.children.length
             let endPoint1 = {
                 x: this.center.x + this.option.level1.gapX,
-                y: getYPositionOf(middleLineY,this.attaches.length, this.option.level1.gapY, index1)
+                y: item1Level.midLineY
             }
             drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
             // text style 1
@@ -199,7 +207,7 @@ class CanvasMe {
             item1Level.children.forEach((item2Level, index2) => {
                 let endPoint2 = {
                     x: endPoint1.x + this.option.level2.gapX,
-                    y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.level2.gapY, index2)
+                    y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.gapY, index2)
                 }
                 drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
                 // text style 2
@@ -278,7 +286,7 @@ function drawDot(ctx, center, radius, color){
  * ## 获取第 index 个元素的 y 位置
  * @param middleLineY {{x: Number, y: Number}} 中心线的 y 位置
  * @param itemSize {Number}元素数量
- * @param gap {Number}每个元素之间的间隔
+ * @param gap {Number} 每个元素之间的间隔
  * @param index {Number} 第几个元素的位置
  */
 function getYPositionOf(middleLineY, itemSize, gap, index){
