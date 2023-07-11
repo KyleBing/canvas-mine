@@ -14,7 +14,7 @@ class CanvasMe {
      *
      */
     constructor(name, attaches) {
-        this.isPlaying = false // 默认自动播放
+        this.isPlaying = true // 默认自动播放
 
         this.mouseX = 0
         this.mouseY = 0
@@ -47,6 +47,7 @@ class CanvasMe {
             let canvasLayer = document.getElementById('canvasLayer')
             this.updateFrameAttribute(canvasLayer)
         }
+        this.lastTime = new Date().getTime()
     }
 
     play(){
@@ -114,10 +115,6 @@ class CanvasMe {
         let canvasLayer = document.getElementById('canvasLayer')
         let ctx = canvasLayer.getContext('2d')
 
-        ctx.clearRect(0, 0, this.frame.width, this.frame.height)
-
-        ctx.imageSmoothingEnabled = true
-
         ctx.strokeStyle = 'black'
         ctx.fillStyle = 'black'
         ctx.textAlign = 'center'
@@ -152,7 +149,7 @@ class CanvasMe {
                 x: this.center.x + this.centerRrcRadius,
                 y: this.center.y
             }
-            drawArcLine(ctx, startPoint, itemCenter, this.cornorRadius, 4)
+            drawArcLine(ctx, startPoint, itemCenter, this.cornorRadius, 5, 'black')
 
             item.children.forEach((subItem, subIndex) => {
                 let subItemCenter = {
@@ -163,16 +160,18 @@ class CanvasMe {
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'left'
                 ctx.fillText(subItem.name,subItemCenter.x + 10, subItemCenter.y)
-                drawArcLine(ctx, {x:itemCenter.x + this.textWidth, y: itemCenter.y} , subItemCenter, 20, 2)
+                drawArcLine(ctx, {x:itemCenter.x + this.textWidth, y: itemCenter.y} , subItemCenter, 20, 3, '#666')
             })
         })
 
         // 显示时间标线序号
         ctx.fillStyle = 'black'
         ctx.font = '20px sans-serf'
-        ctx.clearRect(10, this.frame.height - 53, 100, 30)
-        ctx.fillText(`${this.timeLine}`, 20, this.frame.height - 30)
-
+        ctx.clearRect(10, this.frame.height - 53, 220, 30)
+        // ctx.fillRect(10, this.frame.height - 53, 220, 30)
+        let currentTime =  new Date().getTime()
+        ctx.fillText(`${currentTime - this.lastTime} ms/frame  |  ${this.timeLine} 帧`, 20, this.frame.height - 32)
+        this.lastTime = currentTime
 
         if (this.isPlaying) {
             window.requestAnimationFrame(() => {
@@ -223,8 +222,10 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
  * @param pointD 末端坐标 {x,y}
  * @param radius  圆角半径 Number
  * @param lineWidth  线段宽度 Number
+ * @param lineColor  线段颜色 String
  */
-function drawArcLine(ctx, pointA, pointD, radius, lineWidth){
+function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor){
+    ctx.beginPath()
     ctx.moveTo(pointA.x, pointA.y)
     ctx.arcTo(
         pointA.x + (pointD.x - pointA.x) / 3 * 2,
@@ -241,6 +242,8 @@ function drawArcLine(ctx, pointA, pointD, radius, lineWidth){
         radius
     )
     ctx.lineTo(pointD.x, pointD.y)
+    // ctx.closePath()
+    ctx.strokeStyle = lineColor
     ctx.lineWidth = lineWidth
     ctx.stroke()
 }
