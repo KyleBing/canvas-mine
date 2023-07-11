@@ -23,6 +23,9 @@ class CanvasMe {
             x: 600,
             y: 150
         }
+        this.centerRrcRadius = 150 // 中心元素的圆形 radius
+        this.cornorRadius = 80  // 线段的圆角大小
+
 
         this.frame = {
             width : 1200,
@@ -32,8 +35,8 @@ class CanvasMe {
         this.timeLine = 0
 
         this.bgColor = 'white'
-        this.name = name
-        this.attaches = attaches || []
+        this.name = name  // 主题名
+        this.attaches = attaches || []  // 分支
 
         this.init()
 
@@ -76,6 +79,11 @@ class CanvasMe {
         canvasLayer.style.top = '0'
         canvasLayer.style.left = '0'
 
+        // fill background
+        let ctx = canvasLayer.getContext('2d')
+        ctx.fillStyle = this.bgColor
+        // ctx.rect(0,0,this.frame.width, this.frame.height)
+        ctx.fill()
     }
 
     init(){
@@ -83,9 +91,10 @@ class CanvasMe {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: this.frame.width / 3,
+            x: this.frame.width / 2,
             y: this.frame.height / 2
         }
+
 
         let canvasLayer = document.createElement("canvas")
         this.updateFrameAttribute(canvasLayer)
@@ -104,45 +113,44 @@ class CanvasMe {
         let canvasLayer = document.getElementById('canvasLayer')
         let ctx = canvasLayer.getContext('2d')
 
-        // fill background
-        ctx.fillStyle = this.bgColor
-        ctx.rect(0,0,this.frame.width, this.frame.height)
-        ctx.fill()
+        ctx.clearRect(0, 0, this.frame.width, this.frame.height)
 
         ctx.imageSmoothingEnabled = true
 
         ctx.strokeStyle = 'black'
         ctx.fillStyle = 'black'
-        ctx.font = '30px 微软雅黑'
         ctx.textAlign = 'center'
+        ctx.font = '35px 微软雅黑'
         ctx.textBaseline = 'middle'
-        ctx.fillText(this.name, this.center.x, this.center.y - 10)
+        ctx.fillText(this.name, this.center.x, this.center.y)
 
-
-        let radius = 200
-        ctx.moveTo(this.center.x + radius, this.center.y)
-        ctx.arc(this.center.x, this.center.y,radius,0,Math.PI * 2,)
+        ctx.moveTo(this.center.x + this.centerRrcRadius, this.center.y)
+        ctx.arc(this.center.x, this.center.y,this.centerRrcRadius,0,Math.PI * 2,)
         ctx.lineWidth = 4
         ctx.stroke()
 
         // draw ItemName
         let offsetY = 200
         let offsetX = 800
-        let cornerRadius = 100
+
+        let gapHole = offsetY * this.attaches.length
+        let middleLineY = this.center.y
+
         this.attaches.forEach((item, index) => {
             let itemCenter = {
                 x: this.center.x + offsetX,
-                y: this.center.y - (offsetY * index)
+                y: getYPositionOf(middleLineY,this.attaches.length, offsetY, index)
             }
-            ctx.font = '40px 微软雅黑'
-            ctx.textAlign = 'left'
+            ctx.font = '35px 微软雅黑'
             ctx.textBaseline = 'middle'
+            ctx.textAlign = 'left'
             ctx.fillText(item.name,itemCenter.x + 10, itemCenter.y)
+
             let startPoint = {
-                x: this.center.x + radius,
+                x: this.center.x + this.centerRrcRadius,
                 y: this.center.y
             }
-            drawArcLine(ctx, startPoint , itemCenter, cornerRadius, 3)
+            drawArcLine(ctx, startPoint, itemCenter, this.cornorRadius, 4)
         })
 
         // 显示时间标线序号
@@ -158,6 +166,23 @@ class CanvasMe {
                 this.draw()
             })
         }
+    }
+}
+
+/**
+ * 获取第 index 个元素的 y 位置
+ * @param middleLineY 中心线的 y 位置
+ * @param itemSize 元素数量
+ * @param gap 每个元素之间的间隔
+ * @param index 第几个元素的位置
+ */
+function getYPositionOf(middleLineY, itemSize, gap, index){
+    let gapCount = itemSize - 1 // gap 总数量
+    let middleIndex = gapCount / 2
+    if (index >= middleIndex){
+        return middleLineY + (index - middleIndex) * gap
+    } else {
+        return middleLineY - (middleIndex - index) * gap
     }
 }
 
@@ -186,7 +211,6 @@ function drawArcLine(ctx, pointA, pointD, radius, lineWidth){
         radius
     )
     ctx.lineTo(pointD.x, pointD.y)
-    ctx.lineWidth = lineWidth
     ctx.stroke()
 }
 
