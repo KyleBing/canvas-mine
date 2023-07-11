@@ -37,7 +37,7 @@ class CanvasMe {
             level1: {
                 gapX: 600,
                 gapY: 200,
-                radius: 80,
+                radius: 40,
                 strokeStyle: '#333',
                 lineWidth: 5,
                 dotSize: 5,
@@ -199,11 +199,6 @@ class CanvasMe {
             drawArcLine(ctx, startPoint1, endPoint1, cornerRadius1, this.option.level1.lineWidth, this.option.level1.strokeStyle, this.option.lineRatio)
 
             this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
-            // 判断 radius，如果间隔小于 radius x 2，曲线就会出问题，所以需要重新定义。
-            let radius2 = this.option.level2.radius
-            if (this.option.level2.gapY < this.option.level2.radius * 4){
-                radius2 = this.option.level2.gapY / 4
-            }
             item1Level.children.forEach((item2Level, index2) => {
                 let endPoint2 = {
                     x: endPoint1.x + this.option.level2.gapX,
@@ -222,10 +217,10 @@ class CanvasMe {
                 }
                 let cornerRadius2 = 0
                 if (this.timeLine > this.animationDuration){
-                    cornerRadius2 = radius2
+                    cornerRadius2 = this.option.level2.radius
                     this.animationStop()
                 } else {
-                    cornerRadius2 = radius2 / this.animationDuration * this.timeLine
+                    cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
                 }
 
                 drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.lineWidth, this.option.level2.strokeStyle, this.option.lineRatio)
