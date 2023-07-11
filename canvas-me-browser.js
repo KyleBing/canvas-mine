@@ -55,6 +55,11 @@ class CanvasMe {
             },
         }
 
+        this.separateArrays = [
+            {name: 'left', attaches: [], countItems: 0},
+            {name: 'right', attaches: [], countItems: 0}
+        ]
+
         this.animationDuration = 10  // 动画多少帧内完成
         this.textWidth = 150 // 文字宽度
         this.bgColor = 'white'
@@ -133,46 +138,42 @@ class CanvasMe {
         document.documentElement.append(canvasLayer)
 
 
-        let countItems = 0 // 子元素总个数
-        let lastYPos = 100
-
-
-
+        // 子元素总个数
+        let countItems = 0
         this.attaches.forEach(branchLv1 =>{
             countItems = countItems + branchLv1.children.length
         })
 
+        // 分组
         this.attaches = this.attaches.sort((a,b) => b.children.length - a.children.length)
-        let arrayLeft = []
         let countLeft = 0
-        let arrayRight = []
         let countRight = 0
-
         // 大约均分两部分
         this.attaches.forEach(item => {
-            if (countLeft > countRight){
-                arrayRight.push(item)
-                countRight = countRight + item.children.length
+            if (this.separateArrays[0].countItems > this.separateArrays[1].countItems){
+                this.separateArrays[1].attaches.push(item)
+                this.separateArrays[1].countItems = this.separateArrays[1].countItems + item.children.length
             } else {
-                arrayLeft.push(item)
-                countLeft = countLeft + item.children.length
+                this.separateArrays[0].attaches.push(item)
+                this.separateArrays[0].countItems = this.separateArrays[0].countItems + item.children.length
             }
         })
 
-        console.log(countLeft,arrayLeft,countRight,arrayRight)
+        console.log(this.separateArrays)
+        let maxCount = this.separateArrays[0].countItems > this.separateArrays[1].countItems ? this.separateArrays[0].countItems : this.separateArrays[1].countItems
+        this.option.gapItemY = ( this.frame.height - 100 * 2  - (this.attaches.length - 1) * this.option.gapBranchY) / maxCount
 
-
-        this.option.gapItemY = ( this.frame.height - 100 * 2  - (this.attaches.length - 1) * this.option.gapBranchY) / countItems
-
-        let heightAmount = 0
         // 计算每个区块的高度数据
-        this.attaches.forEach((branchLv1, index) => {
-            branchLv1.height = this.option.gapItemY * branchLv1.children.length
-            heightAmount = heightAmount + branchLv1.height
-            lastYPos = lastYPos + branchLv1.height + this.option.gapBranchY
-            branchLv1.midLineY = lastYPos - branchLv1.height / 2
+        this.separateArrays.forEach(separateArray => {
+            let heightAmount = 0
+            let lastYPos = 100
+            separateArray.attaches.forEach((branchLv1, index) => {
+                branchLv1.height = this.option.gapItemY * branchLv1.children.length
+                heightAmount = heightAmount + branchLv1.height
+                lastYPos = lastYPos + branchLv1.height + this.option.gapBranchY
+                branchLv1.midLineY = lastYPos - branchLv1.height / 2
+            })
         })
-
 
 
         this.draw()
@@ -212,64 +213,66 @@ class CanvasMe {
         ctx.textBaseline = 'middle'
         ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
 
-        this.attaches.forEach((item1Level, index1) => {
-            let branchHeight = this.option.gapItemY * item1Level.children.length
-            let endPoint1 = {
-                x: this.center.x + this.option.level1.gapX,
-                y: item1Level.midLineY
-            }
-            if (this.option.level1.dotSize){
-                drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
-            }
-            // text style 1
-            ctx.font = this.option.level1.font
-            ctx.textBaseline = 'middle'
-            ctx.textAlign = 'left'
-            ctx.fillText(item1Level.name,endPoint1.x + 30, endPoint1.y, this.textWidth)
-
-            let startPoint1 = {
-                x: this.center.x + this.option.mainTopic.radius,
-                y: this.center.y
-            }
-            let cornerRadius1 = 0
-            if (this.timeLine > this.animationDuration){
-                cornerRadius1 = this.option.level1.radius
-            } else {
-                cornerRadius1 = this.option.level1.radius / this.animationDuration * this.timeLine
-            }
-            drawArcLine(ctx, startPoint1, endPoint1, cornerRadius1, this.option.level1.lineWidth, this.option.level1.strokeStyle, this.option.lineRatio)
-
-            this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
-            item1Level.children.forEach((item2Level, index2) => {
-                let endPoint2 = {
-                    x: endPoint1.x + this.option.level2.gapX,
-                    y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.gapItemY, index2)
+        this.separateArrays.forEach((separateArray, index) => {
+            let baseOffsetX = index * 1200
+            separateArray.attaches.forEach((item1Level, index1) => {
+                let branchHeight = this.option.gapItemY * item1Level.children.length
+                let endPoint1 = {
+                    x: this.center.x + this.option.level1.gapX + baseOffsetX,
+                    y: item1Level.midLineY
                 }
-                if (this.option.level2.dotSize){
-                    drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
+                if (this.option.level1.dotSize){
+                    drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
                 }
-                // text style 2
-                ctx.font = this.option.level2.font
+                // text style 1
+                ctx.font = this.option.level1.font
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'left'
-                ctx.fillText(item2Level.name,endPoint2.x + 10, endPoint2.y)
+                ctx.fillText(item1Level.name,endPoint1.x + 30, endPoint1.y, this.textWidth)
 
-                let startPoint2 = {
-                    x: endPoint1.x + this.textWidth,
-                    y: endPoint1.y
+                let startPoint1 = {
+                    x: this.center.x + this.option.mainTopic.radius,
+                    y: this.center.y
                 }
-                let cornerRadius2 = 0
+                let cornerRadius1 = 0
                 if (this.timeLine > this.animationDuration){
-                    cornerRadius2 = this.option.level2.radius
-                    this.animationStop()
+                    cornerRadius1 = this.option.level1.radius
                 } else {
-                    cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
+                    cornerRadius1 = this.option.level1.radius / this.animationDuration * this.timeLine
                 }
+                drawArcLine(ctx, startPoint1, endPoint1, cornerRadius1, this.option.level1.lineWidth, this.option.level1.strokeStyle, this.option.lineRatio)
 
-                drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.lineWidth, this.option.level2.strokeStyle, this.option.lineRatio)
+                this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
+                item1Level.children.forEach((item2Level, index2) => {
+                    let endPoint2 = {
+                        x: endPoint1.x + this.option.level2.gapX,
+                        y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.gapItemY, index2)
+                    }
+                    if (this.option.level2.dotSize){
+                        drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
+                    }
+                    // text style 2
+                    ctx.font = this.option.level2.font
+                    ctx.textBaseline = 'middle'
+                    ctx.textAlign = 'left'
+                    ctx.fillText(item2Level.name,endPoint2.x + 10, endPoint2.y)
+
+                    let startPoint2 = {
+                        x: endPoint1.x + this.textWidth,
+                        y: endPoint1.y
+                    }
+                    let cornerRadius2 = 0
+                    if (this.timeLine > this.animationDuration){
+                        cornerRadius2 = this.option.level2.radius
+                        this.animationStop()
+                    } else {
+                        cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
+                    }
+
+                    drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.lineWidth, this.option.level2.strokeStyle, this.option.lineRatio)
+                })
             })
         })
-
         // 展示 canvas 动画数据
         showAnimationInfo(ctx, this.timeLine, this.frame)
 
