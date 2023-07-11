@@ -164,14 +164,8 @@ class CanvasMe {
             })
         })
 
-        // 显示时间标线序号
-        ctx.fillStyle = 'black'
-        ctx.font = '20px sans-serf'
-        ctx.clearRect(10, this.frame.height - 53, 220, 30)
-        // ctx.fillRect(10, this.frame.height - 53, 220, 30)
-        let currentTime =  new Date().getTime()
-        ctx.fillText(`${currentTime - this.lastTime} ms/frame  |  ${this.timeLine} 帧`, 20, this.frame.height - 32)
-        this.lastTime = currentTime
+        showAnimationInfo(ctx, this.timeLine, this.frame)
+
 
         if (this.isPlaying) {
             window.requestAnimationFrame(() => {
@@ -183,11 +177,27 @@ class CanvasMe {
 }
 
 /**
+ * 显示时间标线序号
+ * @param ctx { ctx }
+ * @param timeline {''}
+ * @param frame {{width, height}}
+ */
+function showAnimationInfo(ctx, timeline, frame){
+    ctx.fillStyle = 'black'
+    ctx.font = '20px sans-serf'
+    ctx.clearRect(10, frame.height - 53, 220, 30)
+    // ctx.fillRect(10, frame.height - 53, 220, 30)
+    let currentTime =  new Date().getTime()
+    ctx.fillText(`${currentTime - this.lastTime} ms/frame  |  ${timeLine} 帧`, 20, frame.height - 32)
+    this.lastTime = currentTime
+}
+
+/**
  * 画点
- * @param ctx
- * @param center
- * @param radius
- * @param color
+ * @param ctx {ctx}
+ * @param center {{x: Number,y: Number}}
+ * @param radius {Number}
+ * @param color {String}
  */
 
 function drawDot(ctx, center, radius, color){
@@ -200,10 +210,10 @@ function drawDot(ctx, center, radius, color){
 
 /**
  * 获取第 index 个元素的 y 位置
- * @param middleLineY 中心线的 y 位置
- * @param itemSize 元素数量
- * @param gap 每个元素之间的间隔
- * @param index 第几个元素的位置
+ * @param middleLineY {{x: Number, y: Number}} 中心线的 y 位置
+ * @param itemSize {Number}元素数量
+ * @param gap {Number}每个元素之间的间隔
+ * @param index {Number} 第几个元素的位置
  */
 function getYPositionOf(middleLineY, itemSize, gap, index){
     let gapCount = itemSize - 1 // gap 总数量
@@ -218,11 +228,11 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
 /**
  *  在 a 与 d 点之间线一条带圆角的拆线
  * @param ctx canvas.context
- * @param pointA 起点坐标 {x,y}
- * @param pointD 末端坐标 {x,y}
- * @param radius  圆角半径 Number
- * @param lineWidth  线段宽度 Number
- * @param lineColor  线段颜色 String
+ * @param pointA {{x: Number, y: Number}} 起点坐标
+ * @param pointD {{x: Number, y: Number}} 末端坐标
+ * @param radius  { Number } 圆角半径
+ * @param lineWidth { Number } 线段宽度
+ * @param lineColor  { String } 线段颜色
  */
 function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor){
     ctx.beginPath()
@@ -252,7 +262,6 @@ function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor){
 function getColor(timeLine){
     return `hsla(${timeLine%360 + 200},150%,50%,1)`
 }
-
 
 /**
  * 输出随机 1 或 -1
