@@ -188,7 +188,7 @@ function showAnimationInfo(ctx, timeline, frame){
     ctx.clearRect(10, frame.height - 53, 220, 30)
     // ctx.fillRect(10, frame.height - 53, 220, 30)
     let currentTime =  new Date().getTime()
-    ctx.fillText(`${currentTime - this.lastTime} ms/frame  |  ${timeLine} 帧`, 20, frame.height - 32)
+    ctx.fillText(`${currentTime - this.lastTime} ms/frame  |  ${timeline} 帧`, 20, frame.height - 32)
     this.lastTime = currentTime
 }
 
