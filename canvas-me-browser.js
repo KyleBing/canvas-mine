@@ -135,7 +135,7 @@ class CanvasMe {
                 x: this.center.x + offsetX,
                 y: getYPositionOf(middleLineY,this.attaches.length, offsetY, index1)
             }
-            // drawDot(ctx,itemCenter,10,'orange')
+            drawDot(ctx, center1,5,'black')
             // text style 1
             ctx.font = '35px 微软雅黑'
             ctx.textBaseline = 'middle'
@@ -153,6 +153,7 @@ class CanvasMe {
                     x: this.center.x + offsetX + offsetX / 2,
                     y: getYPositionOf(center1.y, item1Level.children.length, offsetY / item1Level.children.length, index2)
                 }
+                drawDot(ctx, center2,1,'#666')
                 // text style 2
                 ctx.font = '30px 微软雅黑'
                 ctx.textBaseline = 'middle'
@@ -163,7 +164,7 @@ class CanvasMe {
                     x: center1.x + this.textWidth,
                     y: center1.y
                 }
-                drawArcLine(ctx, startPoint2 , center2, 20, 3, '#666')
+                drawArcLine(ctx, startPoint2 , center2, 20, 2, '#666')
             })
         })
 
@@ -186,6 +187,7 @@ class CanvasMe {
  * @param frame {{width, height}}
  */
 function showAnimationInfo(ctx, timeline, frame){
+    ctx.beginPath()
     ctx.fillStyle = 'black'
     ctx.font = '20px sans-serf'
     ctx.clearRect(10, frame.height - 53, 220, 30)
@@ -204,11 +206,17 @@ function showAnimationInfo(ctx, timeline, frame){
  */
 
 function drawDot(ctx, center, radius, color){
-    ctx.moveTo(center.x - radius, center.y)
+    ctx.save()
+    ctx.beginPath()
+    ctx.moveTo(center.x + radius, center.y)
+    ctx.lineWidth = 0
+    ctx.strokeStyle = color || 'black'
     ctx.fillStyle = color || 'black'
-    ctx.arc(center.x, center.y, radius,0, Math.PI * 2)
-    // ctx.fill()
+    ctx.arc(center.x, center.y, radius,0, Math.PI * 2 )
+    ctx.closePath()
+    ctx.fill()
     ctx.stroke()
+    ctx.restore()
 }
 
 /**
@@ -238,6 +246,7 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
  * @param lineColor  { String } 线段颜色
  */
 function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor){
+    ctx.save()
     ctx.beginPath()
     ctx.moveTo(pointA.x, pointA.y)
     ctx.arcTo(
@@ -255,10 +264,10 @@ function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor){
         radius
     )
     ctx.lineTo(pointD.x, pointD.y)
-    // ctx.closePath()
     ctx.strokeStyle = lineColor
     ctx.lineWidth = lineWidth
     ctx.stroke()
+    ctx.restore()
 }
 
 
