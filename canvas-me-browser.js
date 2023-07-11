@@ -26,7 +26,8 @@ class CanvasMe {
 
         this.option = {
             lineRatio: 2/3,   // 拆线在什么部位弯折
-            gapY: 20,
+            gapItemY: 20, // 每个元素的高度值
+            gapBranchY: 30, // 每个分支的间隔
             mainTopic: {
                 strokeStyle: '#000',
                 lineWidth: 5,
@@ -40,22 +41,22 @@ class CanvasMe {
                 radius: 40,
                 strokeStyle: '#333',
                 lineWidth: 5,
-                dotSize: 5,
-                font: '35px 微软雅黑'
+                dotSize: 3,
+                font: '30px 微软雅黑'
             },
             level2: {
                 gapX: 400,
                 gapY: 200,
-                radius: 20,
+                radius: 10,
                 strokeStyle: '#666',
                 lineWidth: 2,
-                dotSize: 2,
-                font: '30px 微软雅黑',
+                dotSize: 1,
+                font: '28px 微软雅黑',
             },
         }
 
         this.animationDuration = 10  // 动画多少帧内完成
-        this.textWidth = 150 // 文字宽度
+        this.textWidth = 200 // 文字宽度
         this.bgColor = 'white'
         this.attaches = attaches || []  // 分支
 
@@ -137,11 +138,12 @@ class CanvasMe {
         this.attaches.forEach(branchLv1 =>{
             countItems = countItems + branchLv1.children.length
         })
-        this.option.gapY = ( this.frame.height - 100 * 2 ) / countItems
+        this.option.gapItemY = ( this.frame.height - 100 * 2  - (this.attaches.length - 1) * this.option.gapBranchY) / countItems
 
-        this.attaches.forEach(branchLv1 => {
-            branchLv1.height = this.option.gapY * branchLv1.children.length
-            lastYPos = lastYPos + branchLv1.height
+        // 计算每个区块的高度数据
+        this.attaches.forEach((branchLv1, index) => {
+            branchLv1.height = this.option.gapItemY * branchLv1.children.length
+            lastYPos = lastYPos + branchLv1.height + this.option.gapBranchY
             branchLv1.midLineY = lastYPos - branchLv1.height / 2
         })
 
@@ -174,7 +176,7 @@ class CanvasMe {
         ctx.stroke()
 
         this.attaches.forEach((item1Level, index1) => {
-            let branchHeight = this.option.gapY * item1Level.children.length
+            let branchHeight = this.option.gapItemY * item1Level.children.length
             let endPoint1 = {
                 x: this.center.x + this.option.level1.gapX,
                 y: item1Level.midLineY
@@ -202,7 +204,7 @@ class CanvasMe {
             item1Level.children.forEach((item2Level, index2) => {
                 let endPoint2 = {
                     x: endPoint1.x + this.option.level2.gapX,
-                    y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.gapY, index2)
+                    y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.gapItemY, index2)
                 }
                 drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
                 // text style 2
