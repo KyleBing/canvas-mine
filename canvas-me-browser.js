@@ -216,6 +216,18 @@ class CanvasMe {
         this.separateArrays.forEach((separateArray, index) => {
             let baseOffsetX = index * 1200
             separateArray.attaches.forEach((item1Level, index1) => {
+                let center = {
+                    x: this.center.x + baseOffsetX,
+                    y: this.center.y
+                }
+                 // todo 解决偏移量被算在线段长度中的问题
+                if (baseOffsetX){
+                    // ctx.save()
+                    // ctx.beginPath()
+                    // ctx.moveTo(center)
+                    // ctx.stroke()
+                    // ctx.restore()
+                }
                 let branchHeight = this.option.gapItemY * item1Level.children.length
                 let endPoint1 = {
                     x: this.center.x + this.option.level1.gapX + baseOffsetX,
