@@ -47,10 +47,10 @@ class CanvasMe {
             level2: {
                 gapX: 300,
                 gapY: 200,
-                radius: 10,
+                radius: 5,
                 strokeStyle: '#666',
                 lineWidth: 2,
-                dotSize: 3,
+                dotSize: 2,
                 font: '22px 微软雅黑',
             },
         }
@@ -187,7 +187,9 @@ class CanvasMe {
                 x: this.center.x + this.option.level1.gapX,
                 y: item1Level.midLineY
             }
-            drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
+            if (this.option.level1.dotSize){
+                drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
+            }
             // text style 1
             ctx.font = this.option.level1.font
             ctx.textBaseline = 'middle'
@@ -212,7 +214,9 @@ class CanvasMe {
                     x: endPoint1.x + this.option.level2.gapX,
                     y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.gapItemY, index2)
                 }
-                drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
+                if (this.option.level2.dotSize){
+                    drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
+                }
                 // text style 2
                 ctx.font = this.option.level2.font
                 ctx.textBaseline = 'middle'
@@ -314,6 +318,7 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
  */
 function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor, lineRatio){
     ctx.save()
+    ctx.lineCap = 'round'
     ctx.beginPath()
     ctx.moveTo(pointA.x, pointA.y)
     ctx.arcTo(
