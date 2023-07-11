@@ -27,6 +27,7 @@ class CanvasMe {
         this.cornorRadius = 80  // 线段的圆角大小
 
 
+        this.textWidth = 150 // 文字宽度
         this.frame = {
             width : 1200,
             height: 300,
@@ -78,6 +79,7 @@ class CanvasMe {
         canvasLayer.style.position = 'fixed'
         canvasLayer.style.top = '0'
         canvasLayer.style.left = '0'
+        canvasLayer.imageSmoothingEnabled = true
 
         // fill background
         let ctx = canvasLayer.getContext('2d')
@@ -91,10 +93,9 @@ class CanvasMe {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: this.frame.width / 2,
+            x: this.frame.width / 3,
             y: this.frame.height / 2
         }
-
 
         let canvasLayer = document.createElement("canvas")
         this.updateFrameAttribute(canvasLayer)
@@ -131,7 +132,7 @@ class CanvasMe {
 
         // draw ItemName
         let offsetY = 200
-        let offsetX = 800
+        let offsetX = 600
 
         let gapHole = offsetY * this.attaches.length
         let middleLineY = this.center.y
@@ -141,16 +142,29 @@ class CanvasMe {
                 x: this.center.x + offsetX,
                 y: getYPositionOf(middleLineY,this.attaches.length, offsetY, index)
             }
+            // drawDot(ctx,itemCenter,10,'orange')
             ctx.font = '35px 微软雅黑'
             ctx.textBaseline = 'middle'
             ctx.textAlign = 'left'
-            ctx.fillText(item.name,itemCenter.x + 10, itemCenter.y)
+            ctx.fillText(item.name,itemCenter.x + 30, itemCenter.y, this.textWidth)
 
             let startPoint = {
                 x: this.center.x + this.centerRrcRadius,
                 y: this.center.y
             }
             drawArcLine(ctx, startPoint, itemCenter, this.cornorRadius, 4)
+
+            item.children.forEach((subItem, subIndex) => {
+                let subItemCenter = {
+                    x: this.center.x + offsetX + offsetX / 2,
+                    y: getYPositionOf(itemCenter.y, item.children.length, offsetY / item.children.length, subIndex)
+                }
+                ctx.font = '30px 微软雅黑'
+                ctx.textBaseline = 'middle'
+                ctx.textAlign = 'left'
+                ctx.fillText(subItem.name,subItemCenter.x + 10, subItemCenter.y)
+                drawArcLine(ctx, {x:itemCenter.x + this.textWidth, y: itemCenter.y} , subItemCenter, 20, 2)
+            })
         })
 
         // 显示时间标线序号
@@ -167,6 +181,22 @@ class CanvasMe {
             })
         }
     }
+}
+
+/**
+ * 画点
+ * @param ctx
+ * @param center
+ * @param radius
+ * @param color
+ */
+
+function drawDot(ctx, center, radius, color){
+    ctx.moveTo(center.x - radius, center.y)
+    ctx.fillStyle = color || 'black'
+    ctx.arc(center.x, center.y, radius,0, Math.PI * 2)
+    // ctx.fill()
+    ctx.stroke()
 }
 
 /**
@@ -197,22 +227,24 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
 function drawArcLine(ctx, pointA, pointD, radius, lineWidth){
     ctx.moveTo(pointA.x, pointA.y)
     ctx.arcTo(
-        pointA.x + (pointD.x - pointA.x) / 2,
+        pointA.x + (pointD.x - pointA.x) / 3 * 2,
         pointA.y,
-        pointA.x + (pointD.x - pointA.x) / 2,
+        pointA.x + (pointD.x - pointA.x) / 3 * 2,
         pointD.y,
         radius
     )
     ctx.arcTo(
-        pointA.x + (pointD.x - pointA.x) / 2,
+        pointA.x + (pointD.x - pointA.x) / 3 * 2,
         pointD.y,
         pointD.x,
         pointD.y,
         radius
     )
     ctx.lineTo(pointD.x, pointD.y)
+    ctx.lineWidth = lineWidth
     ctx.stroke()
 }
+
 
 function getColor(timeLine){
     return `hsla(${timeLine%360 + 200},150%,50%,1)`
