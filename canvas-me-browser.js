@@ -140,12 +140,18 @@ class CanvasMe {
         })
         this.option.gapItemY = ( this.frame.height - 100 * 2  - (this.attaches.length - 1) * this.option.gapBranchY) / countItems
 
+        let heightAmount = 0
         // 计算每个区块的高度数据
         this.attaches.forEach((branchLv1, index) => {
             branchLv1.height = this.option.gapItemY * branchLv1.children.length
+            heightAmount = heightAmount + branchLv1.height
             lastYPos = lastYPos + branchLv1.height + this.option.gapBranchY
             branchLv1.midLineY = lastYPos - branchLv1.height / 2
         })
+
+        this.attaches.sort()
+
+
 
         this.draw()
 
