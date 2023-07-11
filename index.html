@@ -8,13 +8,46 @@
         let canvasMe = new CanvasMe(
             'CENTER',
             [
-                {name: 'one',   children: [{name: '1'}, {name: '2'}, {name: '3'}]},
-                {name: 'two',   children: [{name: '1'}, {name: '2'}, {name: '3'}]},
-                {name: 'three', children: [{name: '1'}, {name: '2'}]},
-                {name: 'four',  children: [{name: '1'}, {name: '2'}, {name: '3'}]},
-                {name: 'five',  children: [{name: '1'}, {name: '2'}, {name: '3'}]},
-                {name: 'six',   children: [{name: '1'}, {name: '2'}, {name: '3'}, {name: '4'}, {name: '5'}]},
-                {name: 'seven', children: [{name: '1'}, {name: '2'}, {name: '3'}]},
+                {
+                    name: '车辆',
+                    children: [
+                        {name: '大众 速腾'},
+                        {name: '铃木 GSX250R'},
+                        {name: '九号 E125'}
+                    ]
+                },
+                {
+                    name: 'Apple',
+                    children: [
+                        {name: 'iPhone 13 Pro 512'},
+                        {name: 'AirPods Pro 2'},
+                        {name: 'Macbook Pro 14 2021'},
+                        {name: 'AirTag'},
+                        {name: 'MagicKeyBoard 2'},
+                        {name: 'MagicMouse 2'},
+                    ]
+                },
+                {
+                    name: '电子设备',
+                    children: [
+                        {name: 'XBox Series S'},
+                    ]
+                },
+                {
+                    name: '小米',
+                    children: [
+                        {name: '小米灯泡 x5'},
+                        {name: '小米手环 7'},
+                        {name: '小米破壁机'},
+                        {name: '小米小饭煲'},
+                        {name: '小米空气净化器'},
+                        {name: '小米温湿度计 x3'},
+                        {name: '小米雨伞 x3'},
+                        {name: '小米路由器 AC3000'},
+                        {name: '小爱音箱'},
+                        {name: '小米偏光眼镜'},
+                    ]
+                },
             ]
         )
 
@@ -45,8 +78,8 @@
 </head>
 
 <body>
-<button onclick="canvasMe.stop()">Stop</button>
-<button onclick="canvasMe.play()">Start</button>
+<button onclick="canvasMe.animationStop()">Stop</button>
+<button onclick="canvasMe.animationStart()">Start</button>
 <a class="github-btn" href="https://github.com/KyleBing/canvas-me">github</a>
 </body>
 

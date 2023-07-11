@@ -27,7 +27,7 @@ class CanvasMe {
         this.option = {
             lineRatio: 2/3,   // 拆线在什么部位弯折
             mainTopic: {
-                strokeStyle: '#ccc',
+                strokeStyle: '#000',
                 lineWidth: 5,
                 radius: 150, // 中心元素的圆形 radius
                 name: name, // 主题名
@@ -36,7 +36,7 @@ class CanvasMe {
                 gapX: 600,
                 gapY: 200,
                 radius: 80,
-                strokeStyle: '#ccc',
+                strokeStyle: '#333',
                 lineWidth: 5,
                 dotSize: 5
             },
@@ -44,7 +44,7 @@ class CanvasMe {
                 gapX: 400,
                 gapY: 200,
                 radius: 20,
-                strokeStyle: '#999',
+                strokeStyle: '#666',
                 lineWidth: 2,
                 dotSize: 2
             },
@@ -105,6 +105,9 @@ class CanvasMe {
         canvasLayer.style.left = '0'
         canvasLayer.imageSmoothingEnabled = true
 
+
+        this.option.level1.gapY = (this.frame.height - 100 * 2) / this.attaches.length
+
         // fill background
         let ctx = canvasLayer.getContext('2d')
         ctx.fillStyle = this.bgColor
@@ -136,6 +139,8 @@ class CanvasMe {
         this.timeLine = this.timeLine + 1
         let canvasLayer = document.getElementById('canvasLayer')
         let ctx = canvasLayer.getContext('2d')
+        ctx.clearRect(0,0,this.frame.width, this.frame.height)
+
 
         ctx.strokeStyle = 'black'
         ctx.fillStyle = 'black'
@@ -176,6 +181,11 @@ class CanvasMe {
             drawArcLine(ctx, startPoint1, endPoint1, cornerRadius1, this.option.level1.lineWidth, this.option.level1.strokeStyle, this.option.lineRatio)
 
             this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
+            // 判断 radius，如果间隔小于 radius x 2，曲线就会出问题，所以需要重新定义。
+            let radius2 = this.option.level2.radius
+            if (this.option.level2.gapY < this.option.level2.radius * 4){
+                radius2 = this.option.level2.gapY / 4
+            }
             item1Level.children.forEach((item2Level, index2) => {
                 let endPoint2 = {
                     x: endPoint1.x + this.option.level2.gapX,
@@ -194,11 +204,12 @@ class CanvasMe {
                 }
                 let cornerRadius2 = 0
                 if (this.timeLine > this.animationDuration){
-                    cornerRadius2 = this.option.level2.radius
+                    cornerRadius2 = radius2
                     this.animationStop()
                 } else {
-                    cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
+                    cornerRadius2 = radius2 / this.animationDuration * this.timeLine
                 }
+
                 drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.lineWidth, this.option.level2.strokeStyle, this.option.lineRatio)
             })
         })
@@ -208,7 +219,6 @@ class CanvasMe {
 
         if (this.isPlaying) {
             window.requestAnimationFrame(() => {
-                ctx.clearRect(0,0,this.frame.width, this.frame.height)
                 this.draw()
             })
         }
