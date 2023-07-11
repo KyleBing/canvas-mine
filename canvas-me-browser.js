@@ -26,11 +26,13 @@ class CanvasMe {
 
         this.option = {
             lineRatio: 2/3,   // 拆线在什么部位弯折
+            gapY: 20,
             mainTopic: {
                 strokeStyle: '#000',
                 lineWidth: 5,
                 radius: 150, // 中心元素的圆形 radius
                 name: name, // 主题名
+                font: '40px 微软雅黑'
             },
             level1: {
                 gapX: 600,
@@ -38,7 +40,8 @@ class CanvasMe {
                 radius: 80,
                 strokeStyle: '#333',
                 lineWidth: 5,
-                dotSize: 5
+                dotSize: 5,
+                font: '35px 微软雅黑'
             },
             level2: {
                 gapX: 400,
@@ -46,7 +49,8 @@ class CanvasMe {
                 radius: 20,
                 strokeStyle: '#666',
                 lineWidth: 2,
-                dotSize: 2
+                dotSize: 2,
+                font: '30px 微软雅黑',
             },
         }
 
@@ -127,6 +131,12 @@ class CanvasMe {
         this.updateFrameAttribute(canvasLayer)
         document.documentElement.append(canvasLayer)
 
+        let countItems = 0
+        this.attaches.forEach(x =>{
+            countItems = countItems + x.children.length
+        })
+        this.option.gapY = ( this.frame.height - 100 * 2 ) / countItems
+
         this.draw()
 
         document.documentElement.addEventListener('mousemove', event => {
@@ -145,7 +155,7 @@ class CanvasMe {
         ctx.strokeStyle = 'black'
         ctx.fillStyle = 'black'
         ctx.textAlign = 'center'
-        ctx.font = '35px 微软雅黑'
+        ctx.font =  this.option.mainTopic.font
         ctx.textBaseline = 'middle'
         ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
 
@@ -163,7 +173,7 @@ class CanvasMe {
             }
             drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
             // text style 1
-            ctx.font = '35px 微软雅黑'
+            ctx.font = this.option.level1.font
             ctx.textBaseline = 'middle'
             ctx.textAlign = 'left'
             ctx.fillText(item1Level.name,endPoint1.x + 30, endPoint1.y, this.textWidth)
@@ -193,7 +203,7 @@ class CanvasMe {
                 }
                 drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
                 // text style 2
-                ctx.font = '30px 微软雅黑'
+                ctx.font = this.option.level2.font
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'left'
                 ctx.fillText(item2Level.name,endPoint2.x + 10, endPoint2.y)
