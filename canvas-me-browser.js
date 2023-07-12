@@ -135,7 +135,7 @@ class CanvasMe {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: 200,
+            x: (this.frame.width - (this.columeOffsetX - 250) * 2 * this.columeCount) / 2, // 300 大约是两个列之间重叠的部分
             y: this.frame.height / 2
         }
 
