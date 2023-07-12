@@ -55,6 +55,7 @@ class CanvasMe {
                 radius: 20,
                 strokeStyle: '#333',
                 textColor: 'black',
+                textColorImportant: 'red',
                 lineWidth: 5,
                 dotSize: 0,
                 font: '28px 微软雅黑',
@@ -66,6 +67,7 @@ class CanvasMe {
                 radius: 5,
                 strokeStyle: '#333      ',
                 textColor: '#333',
+                textColorImportant: 'red',
                 lineWidth: 2,
                 dotSize: 0,
                 font: '22px 微软雅黑',
@@ -245,6 +247,7 @@ class CanvasMe {
         ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
         ctx.restore()
 
+        // 1. 遍历分列
         this.separateArrays.forEach((separateArray, index) => {
             if (index === 0){
                 let originPoint = {
@@ -263,6 +266,8 @@ class CanvasMe {
                 ctx.restore()
             } else {
             }
+
+            // 2. 遍历列中的类别
             separateArray.attaches.forEach((item1Level, index1) => {
                 let startPoint1 = {x: 0, y: 0}
                 let endPoint1 = {x: 0, y: 0}
@@ -288,7 +293,7 @@ class CanvasMe {
                 if (this.option.level1.dotSize){
                     drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
                 }
-                // text style 1
+                // 一级文字
                 ctx.fillStyle = this.option.level1.textColor
                 ctx.font = this.option.level1.font
                 ctx.textBaseline = 'middle'
@@ -307,7 +312,9 @@ class CanvasMe {
                     this.option.level1.lineWidth,
                     this.option.level1.strokeStyle
                 )
-                this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
+                this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length // 二级中元素的间隔
+
+                // 3. 遍历类别中的子元素
                 item1Level.children.forEach((item2Level, index2) => {
                     let endPoint2 = {
                         x: endPoint1.x + this.option.level2.gapX,
@@ -316,8 +323,8 @@ class CanvasMe {
                     if (this.option.level2.dotSize){
                         drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
                     }
-                    // text style 2
-                    ctx.fillStyle = this.option.level2.textColor
+                    // 二级文字
+                    ctx.fillStyle = item2Level.isImportant? this.option.level2.textColorImportant: this.option.level2.textColor
                     ctx.font = this.option.level2.font
                     ctx.textBaseline = 'middle'
                     ctx.textAlign = 'left'
@@ -334,11 +341,11 @@ class CanvasMe {
                     } else {
                         cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
                     }
-
                     drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.tailDistance, this.option.level2.lineWidth, this.option.level2.strokeStyle)
                 })
             })
 
+            // 4. 最后将未连接的 2.3.4.. 列连接到上一级连线上
             if (index === 0){
 
             } else {
@@ -349,18 +356,17 @@ class CanvasMe {
                 drawDot(ctx,categoryStartPoint, 5, 'black')
                 ctx.save()
                 ctx.beginPath()
-                ctx.lineWidth = this.option.level1.lineWidth
+                ctx.lineWidth = this.option.level1.lineWidth // 复用 一级的树形样式
                 ctx.strokeStyle = this.option.level1.strokeStyle
                 ctx.moveTo(categoryStartPoint.x, categoryStartPoint.y)
                 ctx.lineTo(separateArray.center.x, separateArray.center.y)
                 ctx.stroke()
                 ctx.restore()
             }
-
         })
 
 
-        // 展示 canvas 动画数据
+        // 展示 canvas 数据
         showAnimationInfo(ctx, this.timeLine, this.frame)
 
         if (this.isPlaying) {
