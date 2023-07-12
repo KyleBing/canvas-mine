@@ -23,6 +23,7 @@ class CanvasMe {
             x: 600,
             y: 150
         }
+        this.columeCount = 3
 
         this.option = {
             lineRatio: 2/3,   // 拆线在什么部位弯折
@@ -51,14 +52,11 @@ class CanvasMe {
                 strokeStyle: '#666',
                 lineWidth: 2,
                 dotSize: 0,
-                font: '20px 微软雅黑',
+                font: '22px 微软雅黑',
             },
         }
 
-        this.separateArrays = [
-            {name: 'left', attaches: [], countItems: 0},
-            {name: 'right', attaches: [], countItems: 0}
-        ]
+        this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
 
         this.animationDuration = 10  // 动画多少帧内完成
         this.textWidth = 150 // 文字宽度
@@ -146,20 +144,20 @@ class CanvasMe {
 
         // 分组
         this.attaches = this.attaches.sort((a,b) => b.children.length - a.children.length)
-        let countLeft = 0
-        let countRight = 0
+        for (let i=0; i<this.columeCount; i++){
+            this.separateArrays.push(
+                {name: `${i}`, attaches: [], countItems: 0},
+            )
+        }
+
         // 大约均分两部分
         this.attaches.forEach(item => {
-            if (this.separateArrays[0].countItems > this.separateArrays[1].countItems){
-                this.separateArrays[1].attaches.push(item)
-                this.separateArrays[1].countItems = this.separateArrays[1].countItems + item.children.length
-            } else {
-                this.separateArrays[0].attaches.push(item)
-                this.separateArrays[0].countItems = this.separateArrays[0].countItems + item.children.length
-            }
+            this.separateArrays.sort((a,b) => a.countItems - b.countItems)
+            let min = this.separateArrays[0]
+            min.attaches.push(item)
+            min.countItems = min.countItems + item.children.length
         })
 
-        console.log(this.separateArrays)
         let maxCount = this.separateArrays[0].countItems > this.separateArrays[1].countItems ? this.separateArrays[0].countItems : this.separateArrays[1].countItems
         this.option.gapItemY = ( this.frame.height - 100 * 2  - (this.attaches.length - 1) * this.option.gapBranchY) / maxCount
 
@@ -214,7 +212,7 @@ class CanvasMe {
         ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
 
         this.separateArrays.forEach((separateArray, index) => {
-            let baseOffsetX = index * 1200
+            let baseOffsetX = index * 600
             separateArray.attaches.forEach((item1Level, index1) => {
                 let center = {
                     x: this.center.x + baseOffsetX,
