@@ -27,7 +27,6 @@ class CanvasMe {
         this.columeOffsetX = 800 // 列之间的间隔
 
         this.option = {
-            lineRatio: 2/3,   // 拆线在什么部位弯折
             gapItemY: 20, // 每个元素的高度值
             gapBranchY: 30, // 每个分支的间隔
             mainTopic: {
@@ -44,7 +43,8 @@ class CanvasMe {
                 strokeStyle: '#333',
                 lineWidth: 5,
                 dotSize: 0,
-                font: '28px 微软雅黑'
+                font: '28px 微软雅黑',
+                foldXDistance: 80, // 弯折位置位于末端多远处
             },
             level2: {
                 gapX: 300,
@@ -54,13 +54,14 @@ class CanvasMe {
                 lineWidth: 2,
                 dotSize: 0,
                 font: '22px 微软雅黑',
+                foldXDistance: 80, // 弯折位置位于末端多远处
             },
         }
 
         this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
 
         this.animationDuration = 10  // 动画多少帧内完成
-        this.textWidth = 150 // 文字宽度
+        this.textWidth = 100 // 文字宽度
         this.bgColor = 'white'
         this.attaches = attaches || []  // 分支
 
@@ -275,7 +276,7 @@ class CanvasMe {
                 } else {
                     cornerRadius1 = this.option.level1.radius / this.animationDuration * this.timeLine
                 }
-                drawArcLine(ctx, startPoint1, endPoint1, cornerRadius1, this.option.level1.lineWidth, this.option.level1.strokeStyle, this.option.lineRatio)
+                drawArcLine(ctx, startPoint1, endPoint1, cornerRadius1, this.option.level1.foldXDistance, this.option.level1.lineWidth, this.option.level1.strokeStyle)
 
                 this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
                 item1Level.children.forEach((item2Level, index2) => {
@@ -304,7 +305,7 @@ class CanvasMe {
                         cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
                     }
 
-                    drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.lineWidth, this.option.level2.strokeStyle, this.option.lineRatio)
+                    drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.foldXDistance, this.option.level2.lineWidth, this.option.level2.strokeStyle)
                 })
             })
         })
@@ -381,25 +382,26 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
  * @param pointA {{x: Number, y: Number}} 起点坐标
  * @param pointD {{x: Number, y: Number}} 末端坐标
  * @param radius  { Number } 圆角半径
+ * @param endLineLength  { Number } 末端线段长度
  * @param lineWidth { Number } 线段宽度
  * @param lineColor  { String } 线段颜色
- * @param lineRatio  { Number } 拆线的部位
  */
-function drawArcLine(ctx, pointA, pointD, radius, lineWidth, lineColor, lineRatio){
+function drawArcLine(ctx, pointA, pointD, radius,  endLineLength, lineWidth, lineColor){
     ctx.save()
     ctx.lineCap = 'round'
     ctx.beginPath()
     ctx.lineJoin = 'round'
     ctx.moveTo(pointA.x, pointA.y)
+    let foldX = pointA.x + (pointD.x - pointA.x - endLineLength)
     ctx.arcTo(
-        pointA.x + (pointD.x - pointA.x) * lineRatio,
+        foldX,
         pointA.y,
-        pointA.x + (pointD.x - pointA.x) * lineRatio,
+        foldX,
         pointD.y,
         radius
     )
     ctx.arcTo(
-        pointA.x + (pointD.x - pointA.x) * lineRatio,
+        foldX,
         pointD.y,
         pointD.x,
         pointD.y,
