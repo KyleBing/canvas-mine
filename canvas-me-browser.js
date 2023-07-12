@@ -13,35 +13,19 @@ class CanvasMe {
     /**
      *
      */
-    constructor(name, attaches) {
+    constructor(name, attaches, isShowCanvasInfo) {
         this.isPlaying = true // 默认自动播放
+        this.isShowCanvasInfo = isShowCanvasInfo
 
-        this.mouseX = 0
-        this.mouseY = 0
-
-        this.center=  {
-            x: 600,
-            y: 150
-        }
         this.columeCount = 3
         this.columeOffsetX = 700 // 列之间的间隔
         this.columeOffsetXFirst = 400 // 第一列的开始，偏移量
 
-        this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
-
-        this.animationDuration = 10  // 动画多少帧内完成
-        this.textWidth = 130 // 文字宽度
         this.bgColor = 'white'
-        this.attaches = attaches || []  // 分支
-
-        this.frame = {
-            width : 1200,
-            height: 300,
-        }
-
         this.option = {
-            gapItemY: 20, // 每个元素的高度值
-            gapBranchY: 30, // 每个分支的间隔
+            padding: 80, // 距离边缘距离
+            gapItemY: 20, // 每个子元素的高度值
+            gapBranchY: 30, // 每个类别分支的间隔
             mainTopic: {
                 strokeStyle: '#000',
                 lineWidth: 5,
@@ -50,7 +34,9 @@ class CanvasMe {
                 font: '40px 微软雅黑'
             },
             level1: {
-                gapX: 400,
+                textWidth: 130, // 文字宽度
+                gapX: 400, // 横向宽度
+                tailDistance: 85, // 弯折位置位于末端多远处
                 gapY: 200,
                 radius: 20, // 线段圆角
                 strokeStyle: '#333',
@@ -59,10 +45,10 @@ class CanvasMe {
                 lineWidth: 4,
                 dotSize: 4,
                 font: '28px 微软雅黑',
-                tailDistance: 85, // 弯折位置位于末端多远处
             },
             level2: {
-                gapX: 300,
+                gapX: 300, // 横向宽度
+                tailDistance: 70, // 弯折位置位于末端多远处
                 gapY: 200,
                 radius: 5, // 线段圆角
                 strokeStyle: '#333',
@@ -71,27 +57,36 @@ class CanvasMe {
                 lineWidth: 2,
                 dotSize: 0,
                 font: '24px 微软雅黑',
-                tailDistance: 85, // 弯折位置位于末端多远处
             },
         }
 
+        this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
+        this.attaches = attaches || []  // 分支
+        this.animationDuration = 10  // 动画多少帧内完成
+        this.frame = {
+            width : 1200,
+            height: 300,
+        }
+        this.center=  {
+            x: 600,
+            y: 150
+        }
 
         this.timeLine = 0
+        this.mouseX = 0
+        this.mouseY = 0
+        this.lastTime = new Date().getTime() // 用于计算每帧用时
 
         this.init()
-
         window.onresize = () => {
             this.frame.height = innerHeight * 2
             this.frame.width = innerWidth * 2
             this.init()
         }
-        this.lastTime = new Date().getTime()
-
 
         document.documentElement.addEventListener('mousemove', event => {
             this.mouseX = event.x
             this.mouseY = event.y
-            // console.log(this.mouseX, this.mouseY)
         })
     }
 
@@ -128,7 +123,7 @@ class CanvasMe {
         canvasLayer.imageSmoothingEnabled = true
 
 
-        this.option.level1.gapY = (this.frame.height - 100 * 2) / this.attaches.length
+        this.option.level1.gapY = (this.frame.height - this.option.padding * 2) / this.attaches.length
 
         // fill background
         let ctx = canvasLayer.getContext('2d')
@@ -188,12 +183,12 @@ class CanvasMe {
         this.separateArrays = this.separateArrays.sort((a,b) => b.attaches.length - a.attaches.length) // 最大的在前
         let maxCategory = this.separateArrays[0].attaches.length
 
-        this.option.gapItemY = ( this.frame.height - 100 * 2  - (maxCategory - 1) * this.option.gapBranchY) / maxCount
+        this.option.gapItemY = ( this.frame.height - this.option.padding * 2  - (maxCategory - 1) * this.option.gapBranchY) / maxCount
 
         // 计算每个区块的高度、中心点
         this.separateArrays.forEach((separateArray, index) => {
             let heightAmount = 0
-            let lastYPos = 100
+            let lastYPos = this.option.padding
             separateArray.attaches.forEach((branchLv1, index) => {
                 branchLv1.height = this.option.gapItemY * branchLv1.children.length
                 heightAmount = heightAmount + branchLv1.height
@@ -300,7 +295,7 @@ class CanvasMe {
                 ctx.font = this.option.level1.font
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'center'
-                ctx.fillText(item1Level.name,endPoint1.x + this.textWidth / 2, endPoint1.y, this.textWidth)
+                ctx.fillText(item1Level.name,endPoint1.x + this.option.level1.textWidth / 2, endPoint1.y, this.option.level1.textWidth)
 
                 let cornerRadius1 = 0
                 if (this.timeLine > this.animationDuration){
@@ -333,7 +328,7 @@ class CanvasMe {
                     ctx.fillText(item2Level.name,endPoint2.x + 10, endPoint2.y)
 
                     let startPoint2 = {
-                        x: endPoint1.x + this.textWidth,
+                        x: endPoint1.x + this.option.level1.textWidth,
                         y: endPoint1.y
                     }
                     let cornerRadius2 = 0
@@ -369,7 +364,9 @@ class CanvasMe {
 
 
         // 展示 canvas 数据
-        showAnimationInfo(ctx, this.timeLine, this.frame)
+        if (this.isShowCanvasInfo) {
+            showCanvasInfo(ctx, this.timeLine, this.frame)
+        }
 
         if (this.isPlaying) {
             window.requestAnimationFrame(() => {
@@ -385,7 +382,7 @@ class CanvasMe {
  * @param timeline {''}
  * @param frame {{width, height}}
  */
-function showAnimationInfo(ctx, timeline, frame){
+function showCanvasInfo(ctx, timeline, frame){
     ctx.save()
     ctx.beginPath()
     ctx.fillStyle = 'white'
