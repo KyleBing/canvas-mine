@@ -24,6 +24,7 @@ class CanvasMe {
             y: 150
         }
         this.columeCount = 3
+        this.columeOffsetX = 800 // 列之间的间隔
 
         this.option = {
             lineRatio: 2/3,   // 拆线在什么部位弯折
@@ -146,7 +147,14 @@ class CanvasMe {
         this.attaches = this.attaches.sort((a,b) => b.children.length - a.children.length)
         for (let i=0; i<this.columeCount; i++){
             this.separateArrays.push(
-                {name: `${i}`, attaches: [], countItems: 0},
+                {
+                    name: `${i}`,
+                    attaches: [],
+                    countItems: 0,
+                    center: {
+                        x: 0, y: 0
+                    }
+                },
             )
         }
 
@@ -166,11 +174,10 @@ class CanvasMe {
         this.separateArrays = this.separateArrays.sort((a,b) => b.attaches.length - a.attaches.length) // 最大的在前
         let maxCategory = this.separateArrays[0].attaches.length
 
-        console.log(maxCount)
         this.option.gapItemY = ( this.frame.height - 100 * 2  - (maxCategory - 1) * this.option.gapBranchY) / maxCount
 
-        // 计算每个区块的高度数据
-        this.separateArrays.forEach(separateArray => {
+        // 计算每个区块的高度、中心点
+        this.separateArrays.forEach((separateArray, index) => {
             let heightAmount = 0
             let lastYPos = 100
             separateArray.attaches.forEach((branchLv1, index) => {
@@ -179,8 +186,17 @@ class CanvasMe {
                 lastYPos = lastYPos + branchLv1.height + this.option.gapBranchY
                 branchLv1.midLineY = lastYPos - branchLv1.height / 2
             })
+            if (index === 0){
+                separateArray.center = this.center
+            } else {
+                separateArray.center =  {
+                    x: this.center.x + this.columeOffsetX * index,
+                    y: this.separateArrays[index - 1].attaches[0].midLineY // 第一个数据的中心点
+                        + this.separateArrays[index - 1].attaches[0].height / 2 // 第一个数据的半个高
+                        + this.option.gapItemY / 2 // 加类别之间的间隔的一半
+                }
+            }
         })
-
 
         this.draw()
 
@@ -220,25 +236,29 @@ class CanvasMe {
         ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
 
         this.separateArrays.forEach((separateArray, index) => {
-            let baseOffsetX = index * 600
             separateArray.attaches.forEach((item1Level, index1) => {
-                let center = {
-                    x: this.center.x + baseOffsetX,
-                    y: this.center.y
-                }
-                 // todo 解决偏移量被算在线段长度中的问题
-                if (baseOffsetX){
+
+                if (this.columeOffsetX){
                     // ctx.save()
                     // ctx.beginPath()
                     // ctx.moveTo(center)
                     // ctx.stroke()
                     // ctx.restore()
                 }
-                let branchHeight = this.option.gapItemY * item1Level.children.length
+
+                let startPoint1 = {
+                    x: this.center.x + this.option.mainTopic.radius,
+                    y: this.center.y
+                }
+                if (index !== 0){
+                    startPoint1 = this.separateArrays[index].center
+                    console.log('separate:', index,startPoint1)
+                }
                 let endPoint1 = {
-                    x: this.center.x + this.option.level1.gapX + baseOffsetX,
+                    x: startPoint1.x + this.columeOffsetX,
                     y: item1Level.midLineY
                 }
+
                 if (this.option.level1.dotSize){
                     drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
                 }
@@ -248,10 +268,7 @@ class CanvasMe {
                 ctx.textAlign = 'left'
                 ctx.fillText(item1Level.name,endPoint1.x + 30, endPoint1.y, this.textWidth)
 
-                let startPoint1 = {
-                    x: this.center.x + this.option.mainTopic.radius,
-                    y: this.center.y
-                }
+
                 let cornerRadius1 = 0
                 if (this.timeLine > this.animationDuration){
                     cornerRadius1 = this.option.level1.radius
