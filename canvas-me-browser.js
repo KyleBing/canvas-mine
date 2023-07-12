@@ -52,7 +52,7 @@ class CanvasMe {
             level1: {
                 gapX: 400,
                 gapY: 200,
-                radius: 20,
+                radius: 20, // 线段圆角
                 strokeStyle: '#333',
                 textColor: 'black',
                 textColorImportant: 'red',
@@ -64,8 +64,8 @@ class CanvasMe {
             level2: {
                 gapX: 300,
                 gapY: 200,
-                radius: 5,
-                strokeStyle: '#333      ',
+                radius: 5, // 线段圆角
+                strokeStyle: '#333',
                 textColor: '#333',
                 textColorImportant: 'red',
                 lineWidth: 2,
