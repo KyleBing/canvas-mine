@@ -52,7 +52,7 @@ class CanvasMe {
             level1: {
                 gapX: 400,
                 gapY: 200,
-                radius: 40,
+                radius: 20,
                 strokeStyle: '#333',
                 textColor: 'black',
                 lineWidth: 5,
@@ -261,6 +261,7 @@ class CanvasMe {
                 ctx.lineTo(tempStartPoint1.x, tempStartPoint1.y)
                 ctx.stroke()
                 ctx.restore()
+            } else {
             }
             separateArray.attaches.forEach((item1Level, index1) => {
                 let startPoint1 = {x: 0, y: 0}
@@ -300,13 +301,12 @@ class CanvasMe {
                 } else {
                     cornerRadius1 = this.option.level1.radius / this.animationDuration * this.timeLine
                 }
-                drawArcLine(ctx,
+                this.separateArrays[index].foldX = drawArcLine(ctx,
                     startPoint1, endPoint1, cornerRadius1,
                     this.option.level1.tailDistance,
                     this.option.level1.lineWidth,
                     this.option.level1.strokeStyle
                 )
-
                 this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
                 item1Level.children.forEach((item2Level, index2) => {
                     let endPoint2 = {
@@ -338,7 +338,28 @@ class CanvasMe {
                     drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.tailDistance, this.option.level2.lineWidth, this.option.level2.strokeStyle)
                 })
             })
+
+            if (index === 0){
+
+            } else {
+                let categoryStartPoint = {
+                    x: this.separateArrays[index - 1].foldX,
+                    y: separateArray.center.y
+                }
+                drawDot(ctx,categoryStartPoint, 5, 'black')
+                ctx.save()
+                ctx.beginPath()
+                ctx.lineWidth = this.option.level1.lineWidth
+                ctx.strokeStyle = this.option.level1.strokeStyle
+                ctx.moveTo(categoryStartPoint.x, categoryStartPoint.y)
+                ctx.lineTo(separateArray.center.x, separateArray.center.y)
+                ctx.stroke()
+                ctx.restore()
+            }
+
         })
+
+
         // 展示 canvas 动画数据
         showAnimationInfo(ctx, this.timeLine, this.frame)
 
@@ -444,6 +465,7 @@ function drawArcLine(ctx, pointA, pointD, radius,  endLineLength, lineWidth, lin
     ctx.lineWidth = lineWidth
     ctx.stroke()
     ctx.restore()
+    return foldX
 }
 
 
