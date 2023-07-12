@@ -30,7 +30,7 @@ class CanvasMe {
         this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
 
         this.animationDuration = 10  // 动画多少帧内完成
-        this.textWidth = 160 // 文字宽度
+        this.textWidth = 130 // 文字宽度
         this.bgColor = 'white'
         this.attaches = attaches || []  // 分支
 
@@ -56,8 +56,8 @@ class CanvasMe {
                 strokeStyle: '#333',
                 textColor: 'black',
                 textColorImportant: 'red',
-                lineWidth: 5,
-                dotSize: 0,
+                lineWidth: 4,
+                dotSize: 4,
                 font: '28px 微软雅黑',
                 tailDistance: 85, // 弯折位置位于末端多远处
             },
@@ -70,7 +70,7 @@ class CanvasMe {
                 textColorImportant: 'red',
                 lineWidth: 2,
                 dotSize: 0,
-                font: '22px 微软雅黑',
+                font: '24px 微软雅黑',
                 tailDistance: 85, // 弯折位置位于末端多远处
             },
         }
@@ -83,10 +83,16 @@ class CanvasMe {
         window.onresize = () => {
             this.frame.height = innerHeight * 2
             this.frame.width = innerWidth * 2
-            let canvasLayer = document.getElementById('canvasLayer')
-            this.updateFrameAttribute(canvasLayer)
+            this.init()
         }
         this.lastTime = new Date().getTime()
+
+
+        document.documentElement.addEventListener('mousemove', event => {
+            this.mouseX = event.x
+            this.mouseY = event.y
+            // console.log(this.mouseX, this.mouseY)
+        })
     }
 
     animationStart(){
@@ -152,6 +158,7 @@ class CanvasMe {
 
         // 分组
         this.attaches = this.attaches.sort((a,b) => b.children.length - a.children.length)
+        this.separateArrays = []
         for (let i=0; i<this.columeCount; i++){
             this.separateArrays.push(
                 {
@@ -206,11 +213,6 @@ class CanvasMe {
         })
 
         this.draw()
-
-        document.documentElement.addEventListener('mousemove', event => {
-            this.mouseX = event.x
-            this.mouseY = event.y
-        })
     }
 
     draw() {
@@ -291,14 +293,14 @@ class CanvasMe {
 
 
                 if (this.option.level1.dotSize){
-                    drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
+                    drawDot(ctx, endPoint1, this.option.level1.dotSize, this.option.level1.lineWidth, this.option.level1.strokeStyle, this.option.level1.strokeStyle)
                 }
                 // 一级文字
                 ctx.fillStyle = this.option.level1.textColor
                 ctx.font = this.option.level1.font
                 ctx.textBaseline = 'middle'
-                ctx.textAlign = 'left'
-                ctx.fillText(item1Level.name,endPoint1.x + 30, endPoint1.y, this.textWidth)
+                ctx.textAlign = 'center'
+                ctx.fillText(item1Level.name,endPoint1.x + this.textWidth / 2, endPoint1.y, this.textWidth)
 
                 let cornerRadius1 = 0
                 if (this.timeLine > this.animationDuration){
@@ -321,7 +323,7 @@ class CanvasMe {
                         y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.gapItemY, index2)
                     }
                     if (this.option.level2.dotSize){
-                        drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
+                        drawDot(ctx, endPoint2, this.option.level2.dotSize, this.option.level2.lineWidth, this.option.level2.strokeStyle, this.option.level2.strokeStyle)
                     }
                     // 二级文字
                     ctx.fillStyle = item2Level.isImportant? this.option.level2.textColorImportant: this.option.level2.textColor
@@ -353,7 +355,6 @@ class CanvasMe {
                     x: this.separateArrays[index - 1].foldX,
                     y: separateArray.center.y
                 }
-                drawDot(ctx,categoryStartPoint, 5, 'black')
                 ctx.save()
                 ctx.beginPath()
                 ctx.lineWidth = this.option.level1.lineWidth // 复用 一级的树形样式
@@ -362,6 +363,7 @@ class CanvasMe {
                 ctx.lineTo(separateArray.center.x, separateArray.center.y)
                 ctx.stroke()
                 ctx.restore()
+                drawDot(ctx,categoryStartPoint, 6,this.option.level1.lineWidth,this.option.level1.strokeStyle,'white')
             }
         })
 
@@ -397,24 +399,33 @@ function showAnimationInfo(ctx, timeline, frame){
 }
 
 /**
- * ## 画点
+ *
  * @param ctx
- * @param center {{x: Number,y: Number}}
+ * @param center
  * @param radius {Number}
  * @param color {String}
  */
 
-function drawDot(ctx, center, radius, color){
+/**
+ * ## 画点
+ * @param ctx
+ * @param center {{x: Number,y: Number}}
+ * @param radius  {Number}
+ * @param lineWidth {Number}
+ * @param fillColor  {String}
+ * @param strokeColor {String}
+ */
+function drawDot(ctx, center, radius, lineWidth, fillColor, strokeColor){
     ctx.save()
     ctx.beginPath()
     ctx.moveTo(center.x + radius, center.y)
-    ctx.lineWidth = 0
-    ctx.strokeStyle = color || 'black'
-    ctx.fillStyle = color || 'black'
+    ctx.lineWidth = lineWidth || 0
+    ctx.strokeStyle = fillColor || 'black'
+    ctx.fillStyle =  strokeColor || 'white'
     ctx.arc(center.x, center.y, radius,0, Math.PI * 2 )
     ctx.closePath()
     ctx.fill()
-    // ctx.stroke()
+    ctx.stroke()
     ctx.restore()
 }
 
