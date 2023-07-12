@@ -24,7 +24,20 @@ class CanvasMe {
             y: 150
         }
         this.columeCount = 3
-        this.columeOffsetX = 800 // 列之间的间隔
+        this.columeOffsetX = 700 // 列之间的间隔
+        this.columeOffsetXFirst = 400 // 第一列的开始，偏移量
+
+        this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
+
+        this.animationDuration = 10  // 动画多少帧内完成
+        this.textWidth = 160 // 文字宽度
+        this.bgColor = 'white'
+        this.attaches = attaches || []  // 分支
+
+        this.frame = {
+            width : 1200,
+            height: 300,
+        }
 
         this.option = {
             gapItemY: 20, // 每个元素的高度值
@@ -41,34 +54,25 @@ class CanvasMe {
                 gapY: 200,
                 radius: 40,
                 strokeStyle: '#333',
+                textColor: 'black',
                 lineWidth: 5,
                 dotSize: 0,
                 font: '28px 微软雅黑',
-                foldXDistance: 80, // 弯折位置位于末端多远处
+                tailDistance: 85, // 弯折位置位于末端多远处
             },
             level2: {
                 gapX: 300,
                 gapY: 200,
                 radius: 5,
-                strokeStyle: '#666',
+                strokeStyle: '#333      ',
+                textColor: '#333',
                 lineWidth: 2,
                 dotSize: 0,
                 font: '22px 微软雅黑',
-                foldXDistance: 80, // 弯折位置位于末端多远处
+                tailDistance: 85, // 弯折位置位于末端多远处
             },
         }
 
-        this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
-
-        this.animationDuration = 10  // 动画多少帧内完成
-        this.textWidth = 100 // 文字宽度
-        this.bgColor = 'white'
-        this.attaches = attaches || []  // 分支
-
-        this.frame = {
-            width : 1200,
-            height: 300,
-        }
 
         this.timeLine = 0
 
@@ -213,8 +217,14 @@ class CanvasMe {
         let ctx = canvasLayer.getContext('2d')
         ctx.clearRect(0,0,this.frame.width, this.frame.height)
 
+        // 背景
         ctx.save()
-        // main topic
+        ctx.fillStyle = 'white'
+        ctx.fillRect(0,0,this.frame.width, this.frame.height)
+        ctx.restore()
+
+        // 主题 - 白色背景
+        ctx.save()
         ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)
         ctx.arc(this.center.x, this.center.y,this.option.mainTopic.radius,0,Math.PI * 2,)
         ctx.strokeStyle = this.option.mainTopic.strokeStyle
@@ -226,49 +236,63 @@ class CanvasMe {
         ctx.lineWidth = this.option.mainTopic.lineWidth
         ctx.fill()
         ctx.stroke()
-        ctx.restore()
 
-
-        ctx.strokeStyle = 'black'
+        // 主题 - 标题
         ctx.fillStyle = 'black'
         ctx.textAlign = 'center'
         ctx.font =  this.option.mainTopic.font
         ctx.textBaseline = 'middle'
         ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
+        ctx.restore()
 
         this.separateArrays.forEach((separateArray, index) => {
-            separateArray.attaches.forEach((item1Level, index1) => {
-
-                if (this.columeOffsetX){
-                    // ctx.save()
-                    // ctx.beginPath()
-                    // ctx.moveTo(center)
-                    // ctx.stroke()
-                    // ctx.restore()
-                }
-
-                let startPoint1 = {
+            if (index === 0){
+                let originPoint = {
                     x: this.center.x + this.option.mainTopic.radius,
                     y: this.center.y
                 }
-                if (index !== 0){
+                let tempStartPoint1 = {
+                    x: this.center.x + this.columeOffsetXFirst,
+                    y: this.center.y
+                }
+                ctx.save()
+                ctx.lineWidth = this.option.level1.lineWidth
+                ctx.moveTo(originPoint.x, originPoint.y)
+                ctx.lineTo(tempStartPoint1.x, tempStartPoint1.y)
+                ctx.stroke()
+                ctx.restore()
+            }
+            separateArray.attaches.forEach((item1Level, index1) => {
+                let startPoint1 = {x: 0, y: 0}
+                let endPoint1 = {x: 0, y: 0}
+                // 第一列的特殊样式
+                if (index === 0){
+                    startPoint1 = {
+                        x: this.center.x + this.columeOffsetXFirst,
+                        y: this.center.y
+                    }
+                    endPoint1 = {
+                        x: startPoint1.x + 200,
+                        y: item1Level.midLineY
+                    }
+                } else {
                     startPoint1 = this.separateArrays[index].center
-                    console.log('separate:', index,startPoint1)
+                    endPoint1 = {
+                        x: startPoint1.x + this.columeOffsetX,
+                        y: item1Level.midLineY
+                    }
                 }
-                let endPoint1 = {
-                    x: startPoint1.x + this.columeOffsetX,
-                    y: item1Level.midLineY
-                }
+
 
                 if (this.option.level1.dotSize){
                     drawDot(ctx, endPoint1,this.option.level1.dotSize, this.option.level1.strokeStyle)
                 }
                 // text style 1
+                ctx.fillStyle = this.option.level1.textColor
                 ctx.font = this.option.level1.font
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'left'
                 ctx.fillText(item1Level.name,endPoint1.x + 30, endPoint1.y, this.textWidth)
-
 
                 let cornerRadius1 = 0
                 if (this.timeLine > this.animationDuration){
@@ -276,7 +300,12 @@ class CanvasMe {
                 } else {
                     cornerRadius1 = this.option.level1.radius / this.animationDuration * this.timeLine
                 }
-                drawArcLine(ctx, startPoint1, endPoint1, cornerRadius1, this.option.level1.foldXDistance, this.option.level1.lineWidth, this.option.level1.strokeStyle)
+                drawArcLine(ctx,
+                    startPoint1, endPoint1, cornerRadius1,
+                    this.option.level1.tailDistance,
+                    this.option.level1.lineWidth,
+                    this.option.level1.strokeStyle
+                )
 
                 this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length
                 item1Level.children.forEach((item2Level, index2) => {
@@ -288,6 +317,7 @@ class CanvasMe {
                         drawDot(ctx, endPoint2,this.option.level2.dotSize,this.option.level2.strokeStyle)
                     }
                     // text style 2
+                    ctx.fillStyle = this.option.level2.textColor
                     ctx.font = this.option.level2.font
                     ctx.textBaseline = 'middle'
                     ctx.textAlign = 'left'
@@ -305,7 +335,7 @@ class CanvasMe {
                         cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
                     }
 
-                    drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.foldXDistance, this.option.level2.lineWidth, this.option.level2.strokeStyle)
+                    drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.tailDistance, this.option.level2.lineWidth, this.option.level2.strokeStyle)
                 })
             })
         })
@@ -327,14 +357,16 @@ class CanvasMe {
  * @param frame {{width, height}}
  */
 function showAnimationInfo(ctx, timeline, frame){
+    ctx.save()
     ctx.beginPath()
-    ctx.fillStyle = 'black'
+    ctx.fillStyle = 'white'
     ctx.font = '20px sans-serf'
-    ctx.clearRect(10, frame.height - 53, 220, 30)
-    // ctx.fillRect(10, frame.height - 53, 220, 30)
+    ctx.fillRect(10, frame.height - 53, 220, 30)
     let currentTime =  new Date().getTime()
+    ctx.fillStyle = 'black'
     ctx.fillText(`${currentTime - this.lastTime} ms/frame  |  ${timeline} 帧`, 20, frame.height - 32)
     this.lastTime = currentTime
+    ctx.restore()
 }
 
 /**
