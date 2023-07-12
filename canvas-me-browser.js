@@ -150,7 +150,7 @@ class CanvasMe {
             )
         }
 
-        // 大约均分两部分
+        // 将内容均分到各组中
         this.attaches.forEach(item => {
             this.separateArrays.sort((a,b) => a.countItems - b.countItems)
             let min = this.separateArrays[0]
@@ -158,8 +158,16 @@ class CanvasMe {
             min.countItems = min.countItems + item.children.length
         })
 
-        let maxCount = this.separateArrays[0].countItems > this.separateArrays[1].countItems ? this.separateArrays[0].countItems : this.separateArrays[1].countItems
-        this.option.gapItemY = ( this.frame.height - 100 * 2  - (this.attaches.length - 1) * this.option.gapBranchY) / maxCount
+        // 最大的元素数量
+        this.separateArrays = this.separateArrays.sort((a,b) => b.countItems - a.countItems) // 最大的在前
+        let maxCount = this.separateArrays[0].countItems
+
+        // 最大分类的数量
+        this.separateArrays = this.separateArrays.sort((a,b) => b.attaches.length - a.attaches.length) // 最大的在前
+        let maxCategory = this.separateArrays[0].attaches.length
+
+        console.log(maxCount)
+        this.option.gapItemY = ( this.frame.height - 100 * 2  - (maxCategory - 1) * this.option.gapBranchY) / maxCount
 
         // 计算每个区块的高度数据
         this.separateArrays.forEach(separateArray => {
