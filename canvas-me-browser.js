@@ -64,8 +64,8 @@ class CanvasMe {
         this.attaches = attaches || []  // 分支
         this.animationDuration = 10  // 动画多少帧内完成
         this.frame = {
-            width : 1200,
-            height: 300,
+            width : 1920 * 2,
+            height: 1080 * 2,
         }
         this.center=  {
             x: 600,
@@ -81,32 +81,15 @@ class CanvasMe {
         window.onresize = () => {
             this.frame.height = innerHeight * 2
             this.frame.width = innerWidth * 2
-            this.init()
+            let canvasLayer = document.querySelector('canvas')
+            this.updateFrameAttribute(canvasLayer)
+            // this.init()
         }
 
         document.documentElement.addEventListener('mousemove', event => {
             this.mouseX = event.x
             this.mouseY = event.y
         })
-    }
-
-    animationStart(){
-        if (this.isPlaying){
-
-        } else {
-            this.isPlaying = true
-            this.draw()
-        }
-    }
-    animationStop(){
-        this.isPlaying = false
-    }
-
-    destroy(){
-        this.isPlaying = false
-        let canvasLayer = document.getElementById('canvasLayer')
-        canvasLayer.remove()
-        console.log('动画已停止')
     }
 
     updateFrameAttribute(canvasLayer){
@@ -125,24 +108,6 @@ class CanvasMe {
 
         this.option.level1.gapY = (this.frame.height - this.option.padding * 2) / this.attaches.length
 
-        // fill background
-        let ctx = canvasLayer.getContext('2d')
-        ctx.fillStyle = this.bgColor
-        ctx.fill()
-    }
-
-    init(){
-        this.frame.height = document.documentElement.clientHeight * 2
-        this.frame.width = document.documentElement.clientWidth * 2
-
-        this.center = {
-            x: (this.frame.width - (this.columeOffsetX - 250) * 2 * this.columeCount) / 2, // 300 大约是两个列之间重叠的部分
-            y: this.frame.height / 2
-        }
-
-        let canvasLayer = document.createElement("canvas")
-        this.updateFrameAttribute(canvasLayer)
-        document.documentElement.append(canvasLayer)
 
 
         // 子元素总个数
@@ -206,6 +171,27 @@ class CanvasMe {
                 }
             }
         })
+
+        // fill background
+        let ctx = canvasLayer.getContext('2d')
+        ctx.fillStyle = this.bgColor
+        ctx.fill()
+
+        this.draw()
+    }
+
+    init(){
+        this.frame.height = document.documentElement.clientHeight * 2
+        this.frame.width = document.documentElement.clientWidth * 2
+
+        this.center = {
+            x: (this.frame.width - (this.columeOffsetX - 250) * 2 * this.columeCount) / 2, // 300 大约是两个列之间重叠的部分
+            y: this.frame.height / 2
+        }
+
+        let canvasLayer = document.createElement("canvas")
+        document.documentElement.append(canvasLayer)
+        this.updateFrameAttribute(canvasLayer)
 
         this.draw()
     }
@@ -374,6 +360,27 @@ class CanvasMe {
             })
         }
     }
+
+
+    animationStart(){
+        if (this.isPlaying){
+
+        } else {
+            this.isPlaying = true
+            this.draw()
+        }
+    }
+    animationStop(){
+        this.isPlaying = false
+    }
+
+    destroy(){
+        this.isPlaying = false
+        let canvasLayer = document.getElementById('canvasLayer')
+        canvasLayer.remove()
+        console.log('动画已停止')
+    }
+
 }
 
 /**
