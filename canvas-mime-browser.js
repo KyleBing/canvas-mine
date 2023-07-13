@@ -78,7 +78,7 @@ class CanvasMine {
 
         this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
         this.attaches = attaches || []  // 分支
-        this.animationDuration = 10  // 动画多少帧内完成
+        this.animationDuration = 300  // 动画多少帧内完成
         this.frame = {
             width : 1920 * 2,
             height: 1080 * 2,
@@ -163,6 +163,10 @@ class CanvasMine {
         // 最大分类的数量
         this.separateArrays = this.separateArrays.sort((a,b) => b.attaches.length - a.attaches.length) // 最大的在前
         let maxCategory = this.separateArrays[0].attaches.length
+
+        this.separateArrays.forEach(group => {
+            shuffle(group.attaches)
+        })
 
         this.option.gapItemY = ( this.frame.height - this.option.padding * 2  - (maxCategory - 1) * this.option.gapBranchY) / maxCount
 
@@ -338,11 +342,13 @@ class CanvasMine {
                     let textLevel2 = this.isShowSerialNumber ?
                         `${index2 + 1}. ${item2Level.name}`:
                         item2Level.name
-                    ctx.fillText(
-                        textLevel2,
-                        endPoint2.x + 10,
-                        endPoint2.y
-                    )
+                    if (index2 * 10 < this.timeLine){
+                        ctx.fillText(
+                            textLevel2,
+                            endPoint2.x + 10,
+                            endPoint2.y
+                        )
+                    }
 
                     let startPoint2 = {
                         x: endPoint1.x + this.option.level1.textWidth,
@@ -355,7 +361,9 @@ class CanvasMine {
                     } else {
                         cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
                     }
-                    drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.tailDistance, this.option.level2.lineWidth, this.option.level2.strokeStyle)
+                    if (index2 * 10 < this.timeLine) {
+                        drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.tailDistance, this.option.level2.lineWidth, this.option.level2.strokeStyle)
+                    }
                 })
             })
 
@@ -543,6 +551,23 @@ function randomPosition(width, height){
         Number((width * Math.random()).toFixed(0)),
         Number((height * Math.random()).toFixed(0))
     ]
+}
+
+/**
+ * 数组乱序算法
+ * @param arr
+ * @return {*}
+ */
+function shuffle(arr) {
+    let length = arr.length,
+        r = length,
+        rand = 0;
+
+    while (r) {
+        rand = Math.floor(Math.random() * r--);
+        [arr[r], arr[rand]] = [arr[rand], arr[r]];
+    }
+    return arr;
 }
 
 /**
