@@ -1,14 +1,14 @@
 {
-  "name": "canvas-me",
+  "name": "canvas-mine",
   "version": "0.0.1",
   "description": "the hole of me",
-  "main": "canvas-me-browser.js",
+  "main": "canvas-mime-browser.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KyleBing/canvas-me.git"
+    "url": "git+https://github.com/KyleBing/canvas-mine.git"
   },
   "keywords": [
     "canvas",
@@ -17,9 +17,9 @@
   "author": "KyleBing",
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/KyleBing/canvas-me/issues"
+    "url": "https://github.com/KyleBing/canvas-mine/issues"
   },
-  "homepage": "https://github.com/KyleBing/canvas-me#readme",
+  "homepage": "https://github.com/KyleBing/canvas-mine#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   }

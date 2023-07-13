@@ -1,19 +1,23 @@
 /**
  * 我的所有物品
- * Canvas Me
+ * Canvas Mine
  * @author: KyleBing(kylebing@163.com)
  * @github: https://github.com/KyleBing/animate-canvas-lost
  * @date-init: 2023-07-10
- * @date-update: 2023-07-10
+ * @date-update: 2023-07-13
  * @version: v0.0.1
  * @platform: NPM
  */
 
-class CanvasMe {
+class CanvasMine {
     /**
-     *
+     * CanvasMine
+     * @param name {String}主题名
+     * @param attaches {[]} 内容
+     * @param isShowSerialNumber {Boolean} 是否显示序号
+     * @param isShowCanvasInfo {Boolean} 是否显示 canvas 信息
      */
-    constructor(name, attaches, isShowCanvasInfo) {
+    constructor(name, attaches, isShowSerialNumber, isShowCanvasInfo) {
         this.isPlaying = true // 默认自动播放
         this.isShowCanvasInfo = isShowCanvasInfo
 
@@ -34,7 +38,7 @@ class CanvasMe {
                 font: '40px 微软雅黑'
             },
             level1: {
-                textWidth: 130, // 文字宽度
+                textWidth: 150, // 文字宽度
                 gapX: 400, // 横向宽度
                 tailDistance: 85, // 弯折位置位于末端多远处
                 gapY: 200,
@@ -281,7 +285,12 @@ class CanvasMe {
                 ctx.font = this.option.level1.font
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'center'
-                ctx.fillText(item1Level.name,endPoint1.x + this.option.level1.textWidth / 2, endPoint1.y, this.option.level1.textWidth)
+                ctx.fillText(
+                    `${index1 + 1}. ${item1Level.name}`,
+                    endPoint1.x + this.option.level1.textWidth / 2,
+                    endPoint1.y,
+                    this.option.level1.textWidth
+                )
 
                 let cornerRadius1 = 0
                 if (this.timeLine > this.animationDuration){
@@ -311,7 +320,11 @@ class CanvasMe {
                     ctx.font = this.option.level2.font
                     ctx.textBaseline = 'middle'
                     ctx.textAlign = 'left'
-                    ctx.fillText(item2Level.name,endPoint2.x + 10, endPoint2.y)
+                    ctx.fillText(
+                        `${index2 + 1}. ${item2Level.name}`,
+                        endPoint2.x + 10,
+                        endPoint2.y
+                    )
 
                     let startPoint2 = {
                         x: endPoint1.x + this.option.level1.textWidth,

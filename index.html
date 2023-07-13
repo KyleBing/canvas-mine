@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>我的所有物品</title>
-    <script src="canvas-me-browser.js?v=20230712233046"></script>
+    <script src="canvas-mime-browser.js?v=20230712233046"></script>
     <script>
-        let canvasMe = new CanvasMe(
+        let canvasMine = new CanvasMine(
             'Mine',
             [
                 {
@@ -100,33 +100,17 @@
                     ]
                 },
                 {
-                    name: '小米',
+                    name: '小米小件',
                     isImportant: false,
                     children: [
                         {name: '小米YeeLight灯泡 x n', isImportant: false},
                         {name: '小米手环 7', isImportant: false},
-                        {name: '小米破壁料理机', isImportant: false},
-                        {name: '小米轻音破壁料理机', isImportant: false},
-                        {name: '小米小饭煲', isImportant: false},
-                        {name: '小米空气净化器', isImportant: false},
                         {name: '小米智能温湿度计3', isImportant: false},
                         {name: '小米蓝牙温湿度计', isImportant: false},
-                        {name: '小米雨伞 x3', isImportant: false},
-                        {name: '小米路由器 AX3000', isImportant: false},
-                        {name: '小爱音箱', isImportant: false},
                         {name: '小米偏光眼镜', isImportant: false},
                         {name: '小米中性笔', isImportant: false},
-                        {name: '小米吸尘器', isImportant: false},
-                        {name: '小米桌面风扇', isImportant: false},
-                        {name: '小米电水壶', isImportant: false},
-                        {name: '小米风扇', isImportant: false},
                         {name: '小米人体传感器', isImportant: false},
-                        {name: '小米台灯 Pro', isImportant: false},
-                        {name: '小米云摄像头', isImportant: false},
-                        {name: '小米床头灯', isImportant: false},
                         {name: '小米小夜灯', isImportant: false},
-                        {name: '小米体重秤', isImportant: false},
-                        {name: '小米炒菜锅', isImportant: false},
                         {name: '小米插线板6口', isImportant: false},
                         {name: '小米插线板5口5开关', isImportant: false},
                         {name: '小米充电宝', isImportant: false},
@@ -140,18 +124,40 @@
                         {name: '小米电池7号', isImportant: false},
                         {name: '小米电动牙刷', isImportant: false},
                         {name: '小米除球机', isImportant: false},
+                        {name: '小米精密螺丝刀', isImportant: false},
+                        {name: '小米家用螺丝刀', isImportant: false},
+                        {name: '小米充电头C口33w', isImportant: false},
+                        {name: '小米充电头A口20w', isImportant: false},
+                        {name: '小米电源延长线5m', isImportant: false},
+                        {name: '小米雨伞 x3', isImportant: false},
+                    ]
+                },
+                {
+                    name: '小米大件',
+                    isImportant: false,
+                    children: [
+                        {name: '小米破壁料理机', isImportant: false},
+                        {name: '小米轻音破壁料理机', isImportant: false},
+                        {name: '小米小饭煲', isImportant: false},
+                        {name: '小米空气净化器', isImportant: false},
+                        {name: '小米路由器 AX3000', isImportant: false},
+                        {name: '小爱音箱', isImportant: false},
+                        {name: '小米吸尘器', isImportant: false},
+                        {name: '小米桌面风扇', isImportant: false},
+                        {name: '小米电水壶', isImportant: false},
+                        {name: '小米风扇', isImportant: false},
+                        {name: '小米台灯 Pro', isImportant: false},
+                        {name: '小米云摄像头', isImportant: false},
+                        {name: '小米床头灯', isImportant: false},
+                        {name: '小米体重秤', isImportant: false},
+                        {name: '小米炒菜锅', isImportant: false},
                         {name: '小米吹风机', isImportant: false},
                         {name: '小米手持挂烫机', isImportant: false},
                         {name: '小米电熨斗', isImportant: false},
                         {name: '小米乳胶枕头', isImportant: false},
                         {name: '小米筋膜枪', isImportant: false},
-                        {name: '小米精密螺丝刀', isImportant: false},
-                        {name: '小米家用螺丝刀', isImportant: false},
                         {name: '小米斜挎包', isImportant: false},
                         {name: '小米电视机 43', isImportant: false},
-                        {name: '小米充电头C口33w', isImportant: false},
-                        {name: '小米充电头A口20w', isImportant: false},
-                        {name: '小米电源延长线5m', isImportant: false},
                     ]
                 },
                 {
@@ -199,7 +205,6 @@
                     name: '玩具',
                     isImportant: false,
                     children: [
-                        {name: '大众迈腾车模', isImportant: false},
                     ]
                 },
                 {
@@ -242,10 +247,12 @@
                     isImportant: false,
                     children: [
                         {name: 'Incase City 背包', isImportant: false},
+                        {name: '大众迈腾车模', isImportant: false},
                     ]
                 }
             ],
-            false
+            false,
+            false,
         )
 
         /****************************
@@ -275,8 +282,8 @@
 </head>
 
 <body>
-<!--<button onclick="canvasMe.animationStop()">Stop</button>-->
-<!--<button onclick="canvasMe.animationStart()">Start</button>-->
+<!--<button onclick="canvasMine.animationStop()">Stop</button>-->
+<!--<button onclick="canvasMine.animationStart()">Start</button>-->
 <a class="github-btn" href="https://github.com/KyleBing/canvas-me">github</a>
 </body>
 
