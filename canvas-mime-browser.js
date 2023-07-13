@@ -19,7 +19,15 @@ class CanvasMine {
      * @param isShowSerialNumber {Boolean} 是否显示序号
      * @param isShowCanvasInfo {Boolean} 是否显示 canvas 信息
      */
-    constructor(name, attaches, columnCount, columnOffsetX, isShowSerialNumber, isShowCanvasInfo) {
+    constructor(
+        name,
+        attaches,
+        columnCount,
+        columnOffsetX,
+        isShowSerialNumber,
+        isShowCanvasInfo
+    )
+    {
         this.isPlaying = true // 默认自动播放
         this.isShowCanvasInfo = isShowCanvasInfo
         this.isShowSerialNumber = isShowSerialNumber
