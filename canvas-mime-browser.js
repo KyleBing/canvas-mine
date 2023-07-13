@@ -2,7 +2,7 @@
  * 我的所有物品
  * Canvas Mine
  * @author: KyleBing(kylebing@163.com)
- * @github: https://github.com/KyleBing/animate-canvas-lost
+ * @github: https://github.com/KyleBing/canvas-mine
  * @date-init: 2023-07-10
  * @date-update: 2023-07-13
  * @version: v0.0.1
@@ -14,16 +14,20 @@ class CanvasMine {
      * CanvasMine
      * @param name {String}主题名
      * @param attaches {[]} 内容
+     * @param columnCount {Number} 展示为多少列
+     * @param columnOffsetX {Number} 列之间的间隔
      * @param isShowSerialNumber {Boolean} 是否显示序号
      * @param isShowCanvasInfo {Boolean} 是否显示 canvas 信息
      */
-    constructor(name, attaches, isShowSerialNumber, isShowCanvasInfo) {
+    constructor(name, attaches, columnCount, columnOffsetX, isShowSerialNumber, isShowCanvasInfo) {
         this.isPlaying = true // 默认自动播放
         this.isShowCanvasInfo = isShowCanvasInfo
+        this.isShowSerialNumber = isShowSerialNumber
 
-        this.columeCount = 3
-        this.columeOffsetX = 700 // 列之间的间隔
-        this.columeOffsetXFirst = 400 // 第一列的开始，偏移量
+        this.columnCount = columnCount || 2       // 展示为多少列
+        this.columnOffsetX = columnOffsetX || 700 // 列之间的间隔
+
+        this.columnOffsetXFirst = 400 // 第一列的开始，偏移量
 
         this.bgColor = 'white'
         this.option = {
@@ -123,7 +127,7 @@ class CanvasMine {
         // 分组
         this.attaches = this.attaches.sort((a,b) => b.children.length - a.children.length)
         this.separateArrays = []
-        for (let i=0; i<this.columeCount; i++){
+        for (let i=0; i<this.columnCount; i++){
             this.separateArrays.push(
                 {
                     name: `${i}`,
@@ -168,7 +172,7 @@ class CanvasMine {
                 separateArray.center = this.center
             } else {
                 separateArray.center =  {
-                    x: this.center.x + this.columeOffsetX * index,
+                    x: this.center.x + this.columnOffsetX * index,
                     y: this.separateArrays[index - 1].attaches[0].midLineY // 第一个数据的中心点
                         + this.separateArrays[index - 1].attaches[0].height / 2 // 第一个数据的半个高
                         + this.option.gapItemY / 2 // 加类别之间的间隔的一半
@@ -189,7 +193,7 @@ class CanvasMine {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: (this.frame.width - (this.columeOffsetX - 250) * 2 * this.columeCount) / 2, // 300 大约是两个列之间重叠的部分
+            x: (this.frame.width - (this.columnOffsetX - 250) * 2 * this.columnCount) / 2, // 300 大约是两个列之间重叠的部分
             y: this.frame.height / 2
         }
 
@@ -242,7 +246,7 @@ class CanvasMine {
                     y: this.center.y
                 }
                 let tempStartPoint1 = {
-                    x: this.center.x + this.columeOffsetXFirst,
+                    x: this.center.x + this.columnOffsetXFirst,
                     y: this.center.y
                 }
                 ctx.save()
@@ -261,7 +265,7 @@ class CanvasMine {
                 // 第一列的特殊样式
                 if (index === 0){
                     startPoint1 = {
-                        x: this.center.x + this.columeOffsetXFirst,
+                        x: this.center.x + this.columnOffsetXFirst,
                         y: this.center.y
                     }
                     endPoint1 = {
@@ -271,7 +275,7 @@ class CanvasMine {
                 } else {
                     startPoint1 = this.separateArrays[index].center
                     endPoint1 = {
-                        x: startPoint1.x + this.columeOffsetX,
+                        x: startPoint1.x + this.columnOffsetX,
                         y: item1Level.midLineY
                     }
                 }
@@ -285,8 +289,11 @@ class CanvasMine {
                 ctx.font = this.option.level1.font
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'center'
+                let textLevel1 = this.isShowSerialNumber ?
+                    `${index1 + 1}. ${item1Level.name}`:
+                    item1Level.name
                 ctx.fillText(
-                    `${index1 + 1}. ${item1Level.name}`,
+                    textLevel1,
                     endPoint1.x + this.option.level1.textWidth / 2,
                     endPoint1.y,
                     this.option.level1.textWidth
@@ -320,8 +327,11 @@ class CanvasMine {
                     ctx.font = this.option.level2.font
                     ctx.textBaseline = 'middle'
                     ctx.textAlign = 'left'
+                    let textLevel2 = this.isShowSerialNumber ?
+                        `${index2 + 1}. ${item2Level.name}`:
+                        item2Level.name
                     ctx.fillText(
-                        `${index2 + 1}. ${item2Level.name}`,
+                        textLevel2,
                         endPoint2.x + 10,
                         endPoint2.y
                     )
