@@ -73,6 +73,7 @@ class CanvasMine {
                 lineWidth: 2,
                 dotSize: 0,
                 font: '24px 微软雅黑',
+                fontImportant: 'bold 24px 微软雅黑',
             },
         }
 
@@ -336,7 +337,7 @@ class CanvasMine {
                     }
                     // 二级文字
                     ctx.fillStyle = item2Level.isImportant? this.option.level2.textColorImportant: this.option.level2.textColor
-                    ctx.font = this.option.level2.font
+                    ctx.font = item2Level.isImportant? this.option.level2.fontImportant : this.option.level2.font
                     ctx.textBaseline = 'middle'
                     ctx.textAlign = 'left'
                     let textLevel2 = this.isShowSerialNumber ?
