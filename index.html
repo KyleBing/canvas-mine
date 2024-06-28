@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>我的所有物品</title>
-    <script src="canvas-mime-browser.js?v=20230715233745"></script>
+    <script src="canvas-mime-browser.js?v=20240628154017"></script>
     <script>
         const things = [
             {
@@ -18,9 +18,23 @@
                 name: '车辆',
                 isImportant: false,
                 children: [
-                    {name: '大众 速腾', isImportant: true},
+                    {name: '大众 速腾', isImportant: false},
                     {name: '铃木 GSX250R', isImportant: false},
                     {name: '九号 E125', isImportant: false}
+                ]
+            },
+            {
+                name: '摄影',
+                isImportant: false,
+                children: [
+                    {name: '佳能相机 R6II + 24-104mm STM', isImportant: true},
+                    {name: '镜头 100-400mm USM', isImportant: false},
+                    {name: '镜头 50mm STM', isImportant: false},
+                    {name: 'Ulanzi MT-63 便携三脚架', isImportant: false},
+                    {name: '斯莫格补光灯RC60B', isImportant: false},
+                    {name: '斯莫格补光灯RC60Bc柔光箱', isImportant: false},
+                    {name: 'Ulanzi F38 快拆装备', isImportant: false},
+                    {name: 'Ulanzi F38 快拆肩带', isImportant: false},
                 ]
             },
             {
@@ -62,6 +76,7 @@
                 name: '迪卡侬',
                 isImportant: false,
                 children: [
+                    {name: '徒步背包', isImportant: false},
                     {name: '露营折叠椅', isImportant: false},
                     {name: '自行车防晒衣', isImportant: false},
                     {name: '泳衣全套', isImportant: false},
@@ -210,6 +225,8 @@
                 name: '数码',
                 isImportant: false,
                 children: [
+                    {name: '绿联 MagSafe 充电支架', isImportant: false},
+                    {name: 'MiyooMini+游戏机', isImportant: false},
                     {name: '高驰 Apex2', isImportant: false},
                     {name: 'XBox Series S', isImportant: false},
                     {name: 'XBox 手柄', isImportant: false},
@@ -260,7 +277,7 @@
         let canvasMine = new CanvasMine(
             'Mine',
             things,
-            3,
+            4,
             700,
             false,
             false,
