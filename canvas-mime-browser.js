@@ -206,7 +206,7 @@ class CanvasMine {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: (this.frame.width - (this.columnOffsetX - 250) * 2 * this.columnCount) / 2, // 300 大约是两个列之间重叠的部分
+            x: (this.frame.width - (this.columnOffsetX - 280) * 2 * this.columnCount) / 2, // 300 大约是两个列之间重叠的部分
             y: this.frame.height / 2
         }
 
@@ -232,7 +232,7 @@ class CanvasMine {
         // 主题 - 白色背景
         ctx.save()
         ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)
-        ctx.arc(this.center.x, this.center.y,this.option.mainTopic.radius,0,Math.PI * 2,)
+        ctx.arc(this.center.x, this.center.y, this.option.mainTopic.radius, 0, Math.PI * 2,)
         ctx.strokeStyle = this.option.mainTopic.strokeStyle
         // ctx.shadowColor = 'rgba(0,0,0,0.8)'
         // ctx.shadowBlur = 10

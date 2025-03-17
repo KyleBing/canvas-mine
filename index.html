@@ -3,280 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <title>我的所有物品</title>
-    <script src="canvas-mime-browser.js?v=20240628154017"></script>
+    <script src="canvas-mime-browser.js?v=20250317114709"></script>
+    <script src="./js-yaml.min.js"></script>
     <script>
-        const things = [
-            {
-                name: '证件',
-                isImportant: false,
-                children: [
-                    {name: '身份证', isImportant: false},
-                    {name: '驾驶证 C1D', isImportant: false},
-                ]
-            },
-            {
-                name: '车辆',
-                isImportant: false,
-                children: [
-                    {name: '大众 速腾', isImportant: false},
-                    {name: '铃木 GSX250R', isImportant: false},
-                    {name: '九号 E125', isImportant: false}
-                ]
-            },
-            {
-                name: '摄影',
-                isImportant: false,
-                children: [
-                    {name: '佳能相机 R6II + 24-104mm STM', isImportant: true},
-                    {name: '镜头 100-400mm USM', isImportant: false},
-                    {name: '镜头 50mm STM', isImportant: false},
-                    {name: 'Ulanzi MT-63 便携三脚架', isImportant: false},
-                    {name: '斯莫格补光灯RC60B', isImportant: false},
-                    {name: '斯莫格补光灯RC60Bc柔光箱', isImportant: false},
-                    {name: 'Ulanzi F38 快拆装备', isImportant: false},
-                    {name: 'Ulanzi F38 快拆肩带', isImportant: false},
-                ]
-            },
-            {
-                name: 'Apple',
-                isImportant: false,
-                children: [
-                    {name: 'iPhone 13 Pro 512G', isImportant: false},
-                    {name: 'iPhone X 256G', isImportant: false},
-                    {name: 'iPhone 5s 32G', isImportant: false},
-                    {name: 'AirPods Pro 2', isImportant: false},
-                    {name: 'Macbook Pro 14 2021', isImportant: false},
-                    {name: 'AirTag', isImportant: false},
-                    {name: 'MagicKeyBoard 2', isImportant: false},
-                    {name: 'MagicMouse 2', isImportant: false},
-                    {name: 'EarPods 3.5mm插头', isImportant: false},
-                    {name: 'EarPods mini插头', isImportant: false},
-                    {name: 'iPad Pro 11', isImportant: false},
-                    {name: 'BeatsPill+', isImportant: false},
-                    {name: '充电头20w', isImportant: false},
-                    {name: '充电头5w', isImportant: false},
-                ]
-            },
-            {
-                name: 'GoPro',
-                isImportant: false,
-                children: [
-                    {name: 'GoPro Black9', isImportant: false},
-                    {name: 'GoPro 延长杆', isImportant: false},
-                    {name: '泰迅头盔支架', isImportant: false},
-                    {name: '泰迅项圈支架', isImportant: false},
-                    {name: '泰迅吸盘支架', isImportant: false},
-                    {name: '泰迅快充电池套装', isImportant: false},
-                    {name: '泰迅快充充电盒', isImportant: false},
-                    {name: '泰迅充电宝', isImportant: false},
-                    {name: '泰迅自拍杆充电宝', isImportant: false},
-                ]
-            },
-            {
-                name: '迪卡侬',
-                isImportant: false,
-                children: [
-                    {name: '徒步背包', isImportant: false},
-                    {name: '露营折叠椅', isImportant: false},
-                    {name: '自行车防晒衣', isImportant: false},
-                    {name: '泳衣全套', isImportant: false},
-                    {name: '游泳手表', isImportant: false},
-                    {name: '背包', isImportant: false},
-                    {name: '打气筒', isImportant: false},
-                    {name: '网球', isImportant: false},
-                    {name: '裤子n条', isImportant: false},
-                    {name: '雪地鞋', isImportant: false},
-                    {name: '篮球鞋', isImportant: false},
-                    {name: '帐篷', isImportant: false},
-                    {name: '睡袋', isImportant: false},
-                    {name: '自充气垫子', isImportant: false},
-                    {name: '充气垫子', isImportant: false},
-                    {name: '瑜伽垫子', isImportant: false},
-                    {name: '小背包', isImportant: false},
-                    {name: '小斜挎包', isImportant: false},
-                    {name: '轮滑鞋MF900', isImportant: false},
-                    {name: '水壶', isImportant: false},
-                    {name: '自行车水壶', isImportant: false},
-                    {name: '防水袋', isImportant: false},
-                ]
-            },
-            {
-                name: '车',
-                isImportant: false,
-                children: [
-                    {name: '70迈行车记录仪', isImportant: false},
-                    {name: '支付宝 ETC', isImportant: false},
-                    {name: '小米车载充电器', isImportant: false},
-                    {name: '小米车载吸尘器', isImportant: false},
-                    {name: '小米雨伞', isImportant: false},
-                    {name: '小米露营灯', isImportant: false},
-                ]
-            },
-            {
-                name: '小米-小',
-                isImportant: false,
-                children: [
-                    {name: '小米YeeLight灯泡 x n', isImportant: false},
-                    {name: '小米手环 7', isImportant: false},
-                    {name: '小米智能温湿度计3', isImportant: false},
-                    {name: '小米蓝牙温湿度计', isImportant: false},
-                    {name: '小米偏光眼镜', isImportant: false},
-                    {name: '小米中性笔', isImportant: false},
-                    {name: '小米人体传感器', isImportant: false},
-                    {name: '小米小夜灯', isImportant: false},
-                    {name: '小米插线板6口', isImportant: false},
-                    {name: '小米插线板5口5开关', isImportant: false},
-                    {name: '小米充电宝', isImportant: false},
-                    {name: '小米立式无线充', isImportant: false},
-                    {name: '小米躺式无线充', isImportant: false},
-                    {name: '小米剃须刀', isImportant: false},
-                    {name: '小米指甲刀', isImportant: false},
-                    {name: '小米袪味喷雾', isImportant: false},
-                    {name: '小米驱蚊片', isImportant: false},
-                    {name: '小米电池5号', isImportant: false},
-                    {name: '小米电池7号', isImportant: false},
-                    {name: '小米电动牙刷', isImportant: false},
-                    {name: '小米除球机', isImportant: false},
-                    {name: '小米精密螺丝刀', isImportant: false},
-                    {name: '小米家用螺丝刀', isImportant: false},
-                    {name: '小米充电头C口33w', isImportant: false},
-                    {name: '小米充电头A口20w', isImportant: false},
-                    {name: '小米电源延长线5m', isImportant: false},
-                    {name: '小米雨伞', isImportant: false},
-                    {name: '小米U盘', isImportant: false},
-                ]
-            },
-            {
-                name: '小米-大',
-                isImportant: false,
-                children: [
-                    {name: '小米破壁料理机', isImportant: false},
-                    {name: '小米轻音破壁料理机', isImportant: false},
-                    {name: '小米小饭煲', isImportant: false},
-                    {name: '小米空气净化器', isImportant: false},
-                    {name: '小米路由器 AX3000', isImportant: false},
-                    {name: '小爱音箱', isImportant: false},
-                    {name: '小米吸尘器', isImportant: false},
-                    {name: '小米桌面风扇', isImportant: false},
-                    {name: '小米电水壶', isImportant: false},
-                    {name: '小米风扇', isImportant: false},
-                    {name: '小米台灯 Pro', isImportant: false},
-                    {name: '小米云摄像头', isImportant: false},
-                    {name: '小米床头灯', isImportant: false},
-                    {name: '小米体重秤', isImportant: false},
-                    {name: '小米炒菜锅', isImportant: false},
-                    {name: '小米吹风机', isImportant: false},
-                    {name: '小米手持挂烫机', isImportant: false},
-                    {name: '小米电熨斗', isImportant: false},
-                    {name: '小米乳胶枕头', isImportant: false},
-                    {name: '小米筋膜枪', isImportant: false},
-                    {name: '小米斜挎包', isImportant: false},
-                    {name: '小米电视机 43', isImportant: false},
-                ]
-            },
-            {
-                name: '宜家',
-                isImportant: false,
-                children: [
-                    {name: '杯刷', isImportant: false},
-                    {name: '锅刷', isImportant: false},
-                    {name: '盐瓶', isImportant: false},
-                    {name: '电竞椅 玛赤佩', isImportant: false},
-                    {name: '桌子 贝肯特', isImportant: false},
-                    {name: '椅子 隆菲尔', isImportant: false},
-                    {name: '床褥 1.5x2.0 5cm', isImportant: false},
-                    {name: '收纳小盘', isImportant: false},
-                    {name: '便当盒 x2', isImportant: false},
-                    {name: '保鲜碗', isImportant: false},
-                    {name: '吸盘支架-角', isImportant: false},
-                    {name: '吸盘支架-小', isImportant: false},
-                    {name: '吸盘支架-浴室', isImportant: false},
-                    {name: '水果刀', isImportant: false},
-                    {name: '蒸锅', isImportant: false},
-                ]
-            },
-            {
-                name: '工具',
-                isImportant: false,
-                children: [
-                    {name: '螺丝刀', isImportant: false},
-                    {name: '内六角扳手', isImportant: false},
-                    {name: '梅花内六角扳手', isImportant: false},
-                    {name: '活扳手', isImportant: false},
-                    {name: '呆扳手', isImportant: false},
-                    {name: '套筒扳手', isImportant: false},
-                ]
-            },
-            {
-                name: '装备',
-                isImportant: false,
-                children: [
-                    {name: 'AGV K5s 头盔', isImportant: false},
-                    {name: '小牛 3/4 头盔', isImportant: false},
-                    {name: '自行车头盔', isImportant: false},
-                    {name: '迪卡侬手套 春秋', isImportant: false},
-                    {name: '迪卡侬手套 冬：棉', isImportant: false},
-                    {name: '迪卡侬手套 冬：皮', isImportant: false},
-                    {name: '迪卡侬手套 夏：半指', isImportant: false},
-                    {name: '护膝', isImportant: false},
-                ]
-            },
-            {
-                name: '数码',
-                isImportant: false,
-                children: [
-                    {name: '绿联 MagSafe 充电支架', isImportant: false},
-                    {name: 'MiyooMini+游戏机', isImportant: false},
-                    {name: '高驰 Apex2', isImportant: false},
-                    {name: 'XBox Series S', isImportant: false},
-                    {name: 'XBox 手柄', isImportant: false},
-                    {name: '罗技鼠标 Master3', isImportant: false},
-                    {name: '西数硬盘 14T', isImportant: false},
-                    {name: '三星U盘 32G', isImportant: false},
-                    {name: '舒尔 MV51 话筒', isImportant: false},
-                    {name: '罗德话筒', isImportant: false},
-                    {name: '泰迅罗德麦克充电宝', isImportant: false},
-                    {name: 'Dell 4k u2723qx', isImportant: false},
-                    {name: 'Dell 4k p2315q', isImportant: false},
-                    {name: 'Divoom TimeBox', isImportant: false},
-                    {name: 'Divoom Pixoo', isImportant: false},
-                    {name: '墙面钟表', isImportant: false},
-                    {name: '诺基亚E63', isImportant: false},
-                    {name: '充电线 n条', isImportant: false},
-                ]
-            },
-            {
-                name: '生活',
-                isImportant: false,
-                children: [
-                    {name: '垃圾桶', isImportant: false},
-                    {name: '拖把', isImportant: false},
-                    {name: '扫把', isImportant: false},
-                    {name: '普通水果刀', isImportant: false},
-                    {name: '张小泉菜刀', isImportant: false},
-                    {name: '磨石400/1000目', isImportant: false},
-                    {name: '磨石120/240目', isImportant: false},
-                    {name: '磨石120/240目', isImportant: false},
-                    {name: '杯子-万达影城', isImportant: false},
-                    {name: '便携打气筒', isImportant: false},
-                    {name: '双节棍-黑檀', isImportant: false},
-                    {name: '筷子两双', isImportant: false},
-                    {name: '饭铲', isImportant: false},
-                ]
-            },
-            {
-                name: '其它',
-                isImportant: false,
-                children: [
-                    {name: '电脑支架', isImportant: false},
-                    {name: 'Incase City 背包', isImportant: false},
-                    {name: '大众迈腾车模', isImportant: false},
-                ]
-            }
-        ]
+        const THINGS_YAML = `
+- name: 证件
+  children:
+    - name: 身份证
+    - name: 驾驶证 C1D
+- name: 车辆
+  children:
+    - name: 大众 速腾
+    - name: 铃木 GSX250R
+    - name: 九号 E125
+- name: 摄影
+  children:
+    - name: 佳能相机 R6II + 24-104mm STM
+    - name: 镜头 100-400mm USM
+    - name: 镜头 50mm STM
+    - name: Ulanzi MT-63 便携三脚架
+    - name: 斯莫格补光灯RC60B
+    - name: 斯莫格补光灯RC60Bc柔光箱
+    - name: Ulanzi F38 快拆装备
+    - name: Ulanzi F38 快拆肩带
+- name: Apple
+  children:
+    - name: iPhone 13 Pro 512G
+    - name: iPhone X 256G
+    - name: iPhone 5s 32G
+    - name: AirPods Pro 2
+    - name: Macbook Pro 14 2021
+    - name: AirTag
+    - name: MagicKeyBoard 2
+    - name: MagicKeyBoard 3
+    - name: MagicMouse 2
+    - name: EarPods 3.5mm插头
+    - name: EarPods mini插头
+    - name: iPad Pro 11
+    - name: BeatsPill+
+    - name: 充电头20w
+    - name: 充电头5w
+- name: GoPro
+  children:
+    - name: GoPro Black9
+    - name: GoPro 延长杆
+    - name: 泰迅头盔支架
+    - name: 泰迅项圈支架
+    - name: 泰迅吸盘支架
+    - name: 泰迅快充电池套装
+    - name: 泰迅快充充电盒
+    - name: 泰迅充电宝
+    - name: 泰迅自拍杆充电宝
+- name: 迪卡侬
+  children:
+    - name: 徒步背包
+    - name: 露营折叠椅
+    - name: 自行车防晒衣
+    - name: 泳衣全套
+    - name: 游泳手表
+    - name: 背包
+    - name: 打气筒
+    - name: 网球
+    - name: 裤子n条
+    - name: 雪地鞋
+    - name: 篮球鞋
+    - name: 帐篷
+    - name: 睡袋
+    - name: 自充气垫子
+    - name: 充气垫子
+    - name: 瑜伽垫子
+    - name: 小背包
+    - name: 小斜挎包
+    - name: 轮滑鞋MF900
+    - name: 水壶
+    - name: 自行车水壶
+    - name: 防水袋
+- name: 车
+  children:
+    - name: 70迈行车记录仪
+    - name: 支付宝 ETC
+    - name: 小米车载充电器
+    - name: 小米车载吸尘器
+    - name: 小米雨伞
+    - name: 小米露营灯
+- name: 小米-小
+  children:
+    - name: 小米YeeLight灯泡 x n
+    - name: 小米手环 7
+    - name: 小米智能温湿度计3
+    - name: 小米蓝牙温湿度计
+    - name: 小米偏光眼镜
+    - name: 小米中性笔
+    - name: 小米人体传感器
+    - name: 小米小夜灯
+    - name: 小米插线板6口
+    - name: 小米插线板5口5开关
+    - name: 小米充电宝
+    - name: 小米立式无线充
+    - name: 小米躺式无线充
+    - name: 小米剃须刀
+    - name: 小米指甲刀
+    - name: 小米袪味喷雾
+    - name: 小米驱蚊片
+    - name: 小米电池5号
+    - name: 小米电池7号
+    - name: 小米电动牙刷
+    - name: 小米除球机
+    - name: 小米精密螺丝刀
+    - name: 小米家用螺丝刀
+    - name: 小米充电头C口33w
+    - name: 小米充电头A口20w
+    - name: 小米电源延长线5m
+    - name: 小米雨伞
+    - name: 小米U盘
+- name: 小米-大
+  children:
+    - name: 小米破壁料理机
+    - name: 小米轻音破壁料理机
+    - name: 小米小饭煲
+    - name: 小米空气净化器
+    - name: 小米路由器 AX3000
+    - name: 小爱音箱
+    - name: 小米吸尘器
+    - name: 小米桌面风扇
+    - name: 小米电水壶
+    - name: 小米风扇
+    - name: 小米台灯 Pro
+    - name: 小米云摄像头
+    - name: 小米床头灯
+    - name: 小米体重秤
+    - name: 小米炒菜锅
+    - name: 小米吹风机
+    - name: 小米手持挂烫机
+    - name: 小米电熨斗
+    - name: 小米乳胶枕头
+    - name: 小米筋膜枪
+    - name: 小米斜挎包
+    - name: 小米电视机 43
+- name: 宜家
+  children:
+    - name: 杯刷
+    - name: 锅刷
+    - name: 盐瓶
+    - name: 电竞椅 玛赤佩
+    - name: 桌子 贝肯特
+    - name: 椅子 隆菲尔
+    - name: 床褥 1.5x2.0 5cm
+    - name: 收纳小盘
+    - name: 便当盒 x2
+    - name: 保鲜碗
+    - name: 吸盘支架-角
+    - name: 吸盘支架-小
+    - name: 吸盘支架-浴室
+    - name: 水果刀
+    - name: 蒸锅
+- name: 工具
+  children:
+    - name: 螺丝刀
+    - name: 内六角扳手
+    - name: 梅花内六角扳手
+    - name: 活扳手
+    - name: 呆扳手
+    - name: 套筒扳手
+- name: 装备
+  children:
+    - name: AGV K5s 头盔
+    - name: 小牛 3/4 头盔
+    - name: 自行车头盔
+    - name: 迪卡侬手套 春秋
+    - name: 迪卡侬手套 冬：棉
+    - name: 迪卡侬手套 冬：皮
+    - name: 迪卡侬手套 夏：半指
+    - name: 护膝
+- name: 数码
+  children:
+    - name: 喵喵机单词卡
+    - name: 绿联 MagSafe 充电支架
+    - name: MiyooMini+游戏机
+    - name: 高驰 Apex2
+    - name: XBox Series S
+    - name: XBox 手柄
+    - name: 罗技鼠标 Master3
+    - name: 西数硬盘 14T
+    - name: 三星U盘 32G
+    - name: 舒尔 MV51 话筒
+    - name: 罗德话筒
+    - name: 泰迅罗德麦克充电宝
+    - name: Dell 4k u2723qx
+    - name: Dell 4k p2315q
+    - name: Divoom TimeBox
+    - name: Divoom Pixoo
+    - name: 墙面钟表
+    - name: 诺基亚E63
+    - name: 充电线 n条
+- name: 生活
+  children:
+    - name: 垃圾桶
+    - name: 拖把
+    - name: 扫把
+    - name: 普通水果刀
+    - name: 张小泉菜刀
+    - name: 磨石400/1000目
+    - name: 磨石120/240目
+    - name: 磨石120/240目
+    - name: 杯子-万达影城
+    - name: 便携打气筒
+    - name: 双节棍-黑檀
+    - name: 筷子两双
+    - name: 饭铲
+- name: 其它
+  children:
+    - name: 电脑支架
+    - name: Incase City 背包
+    - name: 车模 - 大众迈腾
+    - name: 车模 - 野马
+    - name: 车模 - BRZ
+    - name: 车模 - CBR600R
+    - name: 车模 - CBR600R
+- name: 开源掌机
+  children:
+    - name: Miyoo Mini+
+    - name: Miyoo A30
+    - name: Miyoo Flip
+    - name: TrimUI Smart Pro
+    - name: TrimUI Brick
+- name: 财富
+  children:
+    - name: 金币 20g 金玉满堂
+    - name: 金币 20g 立体兔头
+    - name: 金豆 2g
+`
+        let thingArray = jsyaml.load(THINGS_YAML)
+        console.log(thingArray)
         let canvasMine = new CanvasMine(
             'Mine',
-            things,
+            thingArray,
             4,
             700,
             false,
@@ -288,9 +249,9 @@
          *  - 有值的时候返回一个包含所有参数的对象
          *  - 无值的时候，返回 `false`
          ****************************/
-        function getSearchData(){
+        function getSearchData() {
             let searchString = location.search;
-            if (searchString){
+            if (searchString) {
                 let obj = {};
                 searchString = searchString.substring(1, searchString.length);
                 let tempArray = searchString.split('&');
@@ -312,7 +273,7 @@
 </body>
 
 <style>
-    .github-btn{
+    .github-btn {
         position: fixed;
         right: 10px;
         bottom: 10px;
@@ -322,6 +283,7 @@
         color: gray;
         cursor: pointer;
     }
+
     .github-btn:hover {
         color: magenta;
     }
