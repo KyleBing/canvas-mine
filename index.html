@@ -130,6 +130,7 @@
 - name: 车载东西
   children:
     - name: 70迈行车记录仪
+      important: true
       price: 369
     - name: 支付宝 ETC
       price: 0
@@ -343,8 +344,9 @@
             thingArray,
             4,
             700,
-            false,
-            false,
+            false,  // show index
+            true,   // show canvas info
+            true    // show price
         )
 
         /****************************

@@ -9,50 +9,62 @@
  * @platform: NPM
  */
 
+
+/**
+ * 整个布局是这样的
+ * 列 col
+ *      类别 category
+ *          元素 item
+ */
+
+
 class CanvasMine {
     /**
-     * CanvasMine
-     * @param name {String}主题名
-     * @param attaches {[]} 内容
-     * @param columnCount {Number} 展示为多少列
-     * @param columnOffsetX {Number} 列之间的间隔
-     * @param isShowSerialNumber {Boolean} 是否显示序号
-     * @param isShowCanvasInfo {Boolean} 是否显示 canvas 信息
+     * ## CanvasMine
+     * @param name String主题名
+     * @param categoryAll
+     * @param colCount Number 展示为多少列
+     * @param colOffsetX Number 列之间的间隔
+     * @param isShowSerialNumber Boolean 是否显示序号
+     * @param isShowCanvasInfo Boolean 是否显示 canvas 信息
+     * @param isShowPrice Boolean
      */
     constructor(
         name,
-        attaches,
-        columnCount,
-        columnOffsetX,
+        categoryAll,
+        colCount,
+        colOffsetX,
         isShowSerialNumber,
-        isShowCanvasInfo
+        isShowCanvasInfo,
+        isShowPrice,
     )
     {
         this.isPlaying = true // 默认自动播放
         this.isShowCanvasInfo = isShowCanvasInfo
         this.isShowSerialNumber = isShowSerialNumber
+        this.isShowPrice = isShowPrice
 
-        this.columnCount = columnCount || 2       // 展示为多少列
-        this.columnOffsetX = columnOffsetX || 700 // 列之间的间隔
+        this.colCount = colCount || 2       // 展示为多少列
+        this.colOffsetX = colOffsetX || 700 // 列之间的间隔
 
-        this.columnOffsetXFirst = 400 // 第一列的开始，偏移量
+        this.offsetBetweenFirstColumnCap = 200 // 第一列与主题文字之间的距离
 
         this.bgColor = 'white'
         this.option = {
-            padding: 80, // 距离边缘距离
-            gapItemY: 20, // 每个子元素的高度值
-            gapBranchY: 30, // 每个类别分支的间隔
+            containerPadding: 80, // 距离边缘距离
+            heightItem: 20, // 每个子元素的高度值
+            gapCategoryY: 30, // 每个类别的上下间隔
             mainTopic: {
-                strokeStyle: '#000',
-                lineWidth: 5,
+                strokeStyle: '#555',
+                lineWidth: 10,
                 radius: 120, // 中心元素的圆形 radius
                 name: name, // 主题名
-                font: '40px 微软雅黑'
+                font: 'bold 40px 微软雅黑'
             },
-            level1: {
+            category: {
                 textWidth: 150, // 文字宽度
-                gapX: 400, // 横向宽度
                 tailDistance: 85, // 弯折位置位于末端多远处
+                gapX: 400, // 横向宽度
                 gapY: 200,
                 radius: 20, // 线段圆角
                 strokeStyle: '#333',
@@ -62,7 +74,7 @@ class CanvasMine {
                 dotSize: 4,
                 font: '28px 微软雅黑',
             },
-            level2: {
+            thing: {
                 gapX: 300, // 横向宽度
                 tailDistance: 70, // 弯折位置位于末端多远处
                 gapY: 200,
@@ -81,8 +93,8 @@ class CanvasMine {
             },
         }
 
-        this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
-        this.attaches = attaches || []  // 分支
+        this.colArray = [] // {name: 'left', categories: [], countItems: 0},
+        this.categoryAll = categoryAll || []  // 分支
         this.animationDuration = 300  // 动画多少帧内完成
         this.frame = {
             width : 1920 * 2,
@@ -127,24 +139,23 @@ class CanvasMine {
         canvasLayer.imageSmoothingEnabled = true
 
 
-        this.option.level1.gapY = (this.frame.height - this.option.padding * 2) / this.attaches.length
-
+        this.option.category.gapY = (this.frame.height - this.option.containerPadding * 2) / this.categoryAll.length
 
 
         // 子元素总个数
         let countItems = 0
-        this.attaches.forEach(branchLv1 =>{
+        this.categoryAll.forEach(branchLv1 =>{
             countItems = countItems + branchLv1.children.length
         })
 
         // 分组
-        this.attaches = this.attaches.sort((a,b) => b.children.length - a.children.length)
-        this.separateArrays = []
-        for (let i=0; i<this.columnCount; i++){
-            this.separateArrays.push(
+        this.categoryAll = this.categoryAll.sort((a, b) => b.children.length - a.children.length)
+        this.colArray = []
+        for (let i = 0; i < this.colCount; i++) {
+            this.colArray.push(
                 {
                     name: `${i}`,
-                    attaches: [],
+                    categories: [],
                     countItems: 0,
                     center: {
                         x: 0, y: 0
@@ -154,53 +165,58 @@ class CanvasMine {
         }
 
         // 将内容均分到各组中
-        this.attaches.forEach(item => {
-            this.separateArrays.sort((a,b) => a.countItems - b.countItems)
-            let min = this.separateArrays[0]
-            min.attaches.push(item)
+        this.categoryAll.forEach(item => {
+            // 每遍历一个，都排序一下，找出最少元素的那一列，新的一个将添加到最少那一排中
+            this.colArray.sort((a, b) => a.countItems - b.countItems)
+            let min = this.colArray[0]
+            min.categories.push(item)
             min.countItems = min.countItems + item.children.length
         })
 
         // 最大的元素数量
-        this.separateArrays = this.separateArrays.sort((a,b) => b.countItems - a.countItems) // 最大的在前
-        let maxCount = this.separateArrays[0].countItems
+        this.colArray = this.colArray.sort((a, b) => b.countItems - a.countItems) // 最大的在前
+        let maxCount = this.colArray[0].countItems
 
         // 最大分类的数量
-        this.separateArrays = this.separateArrays.sort((a,b) => b.attaches.length - a.attaches.length) // 最大的在前
-        let maxCategory = this.separateArrays[0].attaches.length
+        this.colArray = this.colArray.sort((a, b) => b.categories.length - a.categories.length) // 最大的在前
+        let maxCategoryCountInCol = this.colArray[0].categories.length
 
-        this.separateArrays.forEach(group => {
-            shuffle(group.attaches)
+        // 打乱数组顺序
+        this.colArray.forEach(group => {
+            shuffle(group.categories)
         })
 
-        this.option.gapItemY = ( this.frame.height - this.option.padding * 2  - (maxCategory - 1) * this.option.gapBranchY) / maxCount
+        // 计算元素的高度
+        //  = (除去 padding, 最多分类数量的那一列的 gaps ) / 一列中可能的最大元素数量
+        this.option.heightItem = (
+            this.frame.height - 
+            this.option.containerPadding * 2  -
+            (maxCategoryCountInCol - 1) * this.option.gapCategoryY // 每列
+        ) / maxCount
 
         // 计算每个区块的高度、中心点
-        this.separateArrays.forEach((separateArray, index) => {
-            let heightAmount = 0
-            let lastYPos = this.option.padding
-            separateArray.attaches.forEach((branchLv1, index) => {
-                branchLv1.height = this.option.gapItemY * branchLv1.children.length
-                heightAmount = heightAmount + branchLv1.height
-                lastYPos = lastYPos + branchLv1.height + this.option.gapBranchY
-                branchLv1.midLineY = lastYPos - branchLv1.height / 2
+        this.colArray.forEach((col, index) => {
+            let heightAmountOfCol = 0 // 总高度
+            let lastYPos = this.option.containerPadding  // 纵向最后的坐标，初始值为 padding
+            col.categories.forEach((category, index) => {
+                // height category
+                category.height = this.option.heightItem * category.children.length
+                heightAmountOfCol = heightAmountOfCol + category.height
+                lastYPos = lastYPos + category.height + this.option.gapCategoryY
+                // category's middle line y pos
+                category.midLineY = lastYPos - category.height / 2
             })
             if (index === 0){
-                separateArray.center = this.center
+                col.center = this.center
             } else {
-                separateArray.center =  {
-                    x: this.center.x + this.columnOffsetX * index,
-                    y: this.separateArrays[index - 1].attaches[0].midLineY // 第一个数据的中心点
-                        + this.separateArrays[index - 1].attaches[0].height / 2 // 第一个数据的半个高
-                        + this.option.gapItemY / 2 // 加类别之间的间隔的一半
+                col.center =  {
+                    x: this.center.x + this.colOffsetX * index,
+                    y: this.colArray[index - 1].categories[0].midLineY // 第一个类别的中心点
+                        + this.colArray[index - 1].categories[0].height / 2 // 第一个类别的半个高
+                        + this.option.heightItem / 2 // 加类别之间的间隔的一半
                 }
             }
         })
-
-        // fill background
-        let ctx = canvasLayer.getContext('2d')
-        ctx.fillStyle = this.bgColor
-        ctx.fill()
 
         this.draw()
     }
@@ -210,7 +226,10 @@ class CanvasMine {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: (this.frame.width - (this.columnOffsetX - 280) * 2 * this.columnCount) / 2, // 300 大约是两个列之间重叠的部分
+            x: (
+                this.frame.width -
+                (this.colOffsetX - 280) * 2 * this.colCount
+            ) / 2, // 300 大约是两个列之间重叠的部分
             y: this.frame.height / 2
         }
 
@@ -229,13 +248,13 @@ class CanvasMine {
 
         // 背景
         ctx.save()
-        ctx.fillStyle = 'white'
+        ctx.fillStyle = this.bgColor
         ctx.fillRect(0,0,this.frame.width, this.frame.height)
         ctx.restore()
 
-        // 主题 - 白色背景
+        // Cap Title - bg
         ctx.save()
-        ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)
+        ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)  // 移动到圆的右侧点
         ctx.arc(this.center.x, this.center.y, this.option.mainTopic.radius, 0, Math.PI * 2,)
         ctx.strokeStyle = this.option.mainTopic.strokeStyle
         // ctx.shadowColor = 'rgba(0,0,0,0.8)'
@@ -247,7 +266,7 @@ class CanvasMine {
         ctx.fill()
         ctx.stroke()
 
-        // 主题 - 标题
+        // Cap Title - text title
         ctx.fillStyle = 'black'
         ctx.textAlign = 'center'
         ctx.font =  this.option.mainTopic.font
@@ -256,18 +275,19 @@ class CanvasMine {
         ctx.restore()
 
         // 1. 遍历分列
-        this.separateArrays.forEach((separateArray, index) => {
+        this.colArray.forEach((col, index) => {
+            // 主题 与 第一列之间的连线
             if (index === 0){
                 let originPoint = {
-                    x: this.center.x + this.option.mainTopic.radius,
+                    x: this.center.x + this.option.mainTopic.radius,  // 移动到主题圆的右边点
                     y: this.center.y
                 }
                 let tempStartPoint1 = {
-                    x: this.center.x + this.columnOffsetXFirst,
+                    x: this.center.x + this.offsetBetweenFirstColumnCap,
                     y: this.center.y
                 }
                 ctx.save()
-                ctx.lineWidth = this.option.level1.lineWidth
+                ctx.lineWidth = this.option.category.lineWidth
                 ctx.moveTo(originPoint.x, originPoint.y)
                 ctx.lineTo(tempStartPoint1.x, tempStartPoint1.y)
                 ctx.stroke()
@@ -276,116 +296,140 @@ class CanvasMine {
             }
 
             // 2. 遍历列中的类别
-            separateArray.attaches.forEach((item1Level, index1) => {
+            col.categories.forEach((category, indexCategory) => {
                 let startPoint1 = {x: 0, y: 0}
                 let endPoint1 = {x: 0, y: 0}
                 // 第一列的特殊样式
                 if (index === 0){
                     startPoint1 = {
-                        x: this.center.x + this.columnOffsetXFirst,
+                        x: this.center.x + this.offsetBetweenFirstColumnCap,
                         y: this.center.y
                     }
                     endPoint1 = {
                         x: startPoint1.x + 200,
-                        y: item1Level.midLineY
+                        y: category.midLineY
                     }
                 } else {
-                    startPoint1 = this.separateArrays[index].center
+                    startPoint1 = this.colArray[index].center
                     endPoint1 = {
-                        x: startPoint1.x + this.columnOffsetX,
-                        y: item1Level.midLineY
+                        x: startPoint1.x + this.colOffsetX,
+                        y: category.midLineY
                     }
                 }
 
-
-                if (this.option.level1.dotSize){
-                    drawDot(ctx, endPoint1, this.option.level1.dotSize, this.option.level1.lineWidth, this.option.level1.strokeStyle, this.option.level1.strokeStyle)
+                if (this.option.category.dotSize){
+                    drawDot(
+                        ctx,
+                        endPoint1,
+                        this.option.category.dotSize,
+                        this.option.category.lineWidth,
+                        this.option.category.strokeStyle,
+                        this.option.category.strokeStyle
+                    )
                 }
-                // 一级文字
-                ctx.fillStyle = this.option.level1.textColor
-                ctx.font = this.option.level1.font
+
+                // 文字 - 类别
+                ctx.fillStyle = this.option.category.textColor
+                ctx.font = this.option.category.font
                 ctx.textBaseline = 'middle'
                 ctx.textAlign = 'center'
-                let textLevel1 = this.isShowSerialNumber ?
-                    `${index1 + 1}. ${item1Level.name}`:
-                    item1Level.name
+                let titleCategory = this.isShowSerialNumber ?
+                    `${indexCategory + 1}. ${category.name}`:
+                    category.name
                 ctx.fillText(
-                    textLevel1,
-                    endPoint1.x + this.option.level1.textWidth / 2,
+                    titleCategory,
+                    endPoint1.x + this.option.category.textWidth / 2,
                     endPoint1.y,
-                    this.option.level1.textWidth
+                    this.option.category.textWidth
                 )
 
-                // 一级文字 价格
-                ctx.fillStyle = this.option.priceFont.textColor
-                ctx.font = this.option.priceFont.font
-                ctx.textBaseline = 'middle'
-                ctx.textAlign = 'center'
-                ctx.fillText(
-                    `￥${item1Level.price}`,
-                    endPoint1.x + this.option.level1.textWidth / 2,
-                    endPoint1.y + 30,
-                    this.option.level1.textWidth
-                )
+                if (this.isShowPrice){
+                    // 价格 - 类别
+                    ctx.fillStyle = this.option.priceFont.textColor
+                    ctx.font = this.option.priceFont.font
+                    ctx.textBaseline = 'middle'
+                    ctx.textAlign = 'center'
+                    ctx.fillText(
+                        `￥${category.price}`,
+                        endPoint1.x + this.option.category.textWidth / 2,
+                        endPoint1.y + 30,
+                        this.option.category.textWidth
+                    )
+                }
 
+
+                // 动画
                 let cornerRadius1 = 0
                 if (this.timeLine > this.animationDuration){
-                    cornerRadius1 = this.option.level1.radius
+                    cornerRadius1 = this.option.category.radius
                 } else {
-                    cornerRadius1 = this.option.level1.radius / this.animationDuration * this.timeLine
+                    cornerRadius1 = this.option.category.radius / this.animationDuration * this.timeLine
                 }
-                this.separateArrays[index].foldX = drawArcLine(ctx,
+                this.colArray[index].foldX = drawArcLine(ctx,
                     startPoint1, endPoint1, cornerRadius1,
-                    this.option.level1.tailDistance,
-                    this.option.level1.lineWidth,
-                    this.option.level1.strokeStyle
+                    this.option.category.tailDistance,
+                    this.option.category.lineWidth,
+                    this.option.category.strokeStyle
                 )
-                this.option.level2.gapY = this.option.level1.gapY / item1Level.children.length // 二级中元素的间隔
+                this.option.thing.gapY = this.option.category.gapY / category.children.length // 二级中元素的间隔
 
                 // 3. 遍历类别中的子元素
-                item1Level.children.forEach((item2Level, index2) => {
+                category.children.forEach((thing, indexThing) => {
                     let endPoint2 = {
-                        x: endPoint1.x + this.option.level2.gapX,
-                        y: getYPositionOf(endPoint1.y, item1Level.children.length, this.option.gapItemY, index2)
+                        x: endPoint1.x + this.option.thing.gapX,
+                        y: getYPositionOf(endPoint1.y, category.children.length, this.option.heightItem, indexThing)
                     }
-                    if (this.option.level2.dotSize){
-                        drawDot(ctx, endPoint2, this.option.level2.dotSize, this.option.level2.lineWidth, this.option.level2.strokeStyle, this.option.level2.strokeStyle)
+                    if (this.option.thing.dotSize){
+                        drawDot(ctx, endPoint2, this.option.thing.dotSize, this.option.thing.lineWidth, this.option.thing.strokeStyle, this.option.thing.strokeStyle)
                     }
-                    // 二级文字
-                    ctx.fillStyle = item2Level.isImportant? this.option.level2.textColorImportant: this.option.level2.textColor
-                    ctx.font = item2Level.isImportant? this.option.level2.fontImportant : this.option.level2.font
+                    // 物品名字
+                    ctx.fillStyle = thing.important? this.option.thing.textColorImportant: this.option.thing.textColor
+                    ctx.font = thing.important? this.option.thing.fontImportant : this.option.thing.font
                     ctx.textBaseline = 'middle'
                     ctx.textAlign = 'left'
+
+                    // 物品价格
                     let priceText = ''
-                    if (item2Level.price === undefined) {
-                        priceText = ''
-                    } else {
-                        priceText = ' - ￥' + item2Level.price
+                    if (this.isShowPrice) {
+                        if (thing.price === undefined) {
+                            priceText = ''
+                        } else {
+                            priceText = ' - ￥' + thing.price
+                        }
                     }
-                    let textLevel2 = this.isShowSerialNumber ?
-                        `${index2 + 1}. ${item2Level.name}`:
-                        `${item2Level.name}${priceText}`
-                    if (index2 * 10 < this.timeLine){
+
+                    let titleThing = this.isShowSerialNumber ?
+                        `${indexThing + 1}. ${thing.name}`:
+                        `${thing.name}${priceText}`
+                    if (indexThing * 10 < this.timeLine){
                         ctx.fillText(
-                            textLevel2,
+                            titleThing,
                             endPoint2.x + 10,
                             endPoint2.y
                         )
                     }
 
                     let startPoint2 = {
-                        x: endPoint1.x + this.option.level1.textWidth,
+                        x: endPoint1.x + this.option.category.textWidth,
                         y: endPoint1.y
                     }
                     let cornerRadius2 = 0
                     if (this.timeLine > this.animationDuration){
-                        cornerRadius2 = this.option.level2.radius
+                        cornerRadius2 = this.option.thing.radius
                         this.animationStop()
                     } else {
-                        cornerRadius2 = this.option.level2.radius / this.animationDuration * this.timeLine
+                        cornerRadius2 = this.option.thing.radius / this.animationDuration * this.timeLine
                     }
-                    if (index2 * 10 < this.timeLine) {
-                        drawArcLine(ctx, startPoint2 , endPoint2, cornerRadius2, this.option.level2.tailDistance, this.option.level2.lineWidth, this.option.level2.strokeStyle)
+                    if (indexThing * 10 < this.timeLine) {
+                        drawArcLine(
+                            ctx,
+                            startPoint2 ,
+                            endPoint2,
+                            cornerRadius2,
+                            this.option.thing.tailDistance,
+                            this.option.thing.lineWidth,
+                            this.option.thing.strokeStyle
+                        )
                     }
                 })
             })
@@ -395,18 +439,18 @@ class CanvasMine {
 
             } else {
                 let categoryStartPoint = {
-                    x: this.separateArrays[index - 1].foldX,
-                    y: separateArray.center.y
+                    x: this.colArray[index - 1].foldX,
+                    y: col.center.y
                 }
                 ctx.save()
                 ctx.beginPath()
-                ctx.lineWidth = this.option.level1.lineWidth // 复用 一级的树形样式
-                ctx.strokeStyle = this.option.level1.strokeStyle
+                ctx.lineWidth = this.option.category.lineWidth // 复用 一级的树形样式
+                ctx.strokeStyle = this.option.category.strokeStyle
                 ctx.moveTo(categoryStartPoint.x, categoryStartPoint.y)
-                ctx.lineTo(separateArray.center.x, separateArray.center.y)
+                ctx.lineTo(col.center.x, col.center.y)
                 ctx.stroke()
+                drawDot(ctx,categoryStartPoint, 6,this.option.category.lineWidth,this.option.category.strokeStyle,'white')
                 ctx.restore()
-                drawDot(ctx,categoryStartPoint, 6,this.option.level1.lineWidth,this.option.level1.strokeStyle,'white')
             }
         })
 
@@ -481,7 +525,14 @@ function showCanvasInfo(ctx, timeline, frame){
  * @param fillColor  {String}
  * @param strokeColor {String}
  */
-function drawDot(ctx, center, radius, lineWidth, fillColor, strokeColor){
+function drawDot(
+    ctx,
+    center,
+    radius,
+    lineWidth,
+    fillColor,
+    strokeColor
+){
     ctx.save()
     ctx.beginPath()
     ctx.moveTo(center.x + radius, center.y)
@@ -522,7 +573,15 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
  * @param lineWidth { Number } 线段宽度
  * @param lineColor  { String } 线段颜色
  */
-function drawArcLine(ctx, pointA, pointD, radius,  endLineLength, lineWidth, lineColor){
+function drawArcLine(
+    ctx,
+    pointA,
+    pointD,
+    radius,
+    endLineLength,
+    lineWidth,
+    lineColor
+){
     ctx.save()
     ctx.lineCap = 'round'
     ctx.beginPath()
@@ -557,7 +616,7 @@ function getColor(timeLine){
 }
 
 /**
- * 输出随机 1 或 -1
+ * ## 输出随机 1 或 -1
  * @returns {number}
  */
 function randomDirection(){
@@ -577,7 +636,7 @@ function randomPosition(width, height){
 }
 
 /**
- * 数组乱序算法
+ * ## 数组乱序算法
  * @param arr
  * @return {*}
  */
@@ -594,7 +653,7 @@ function shuffle(arr) {
 }
 
 /**
- * 生成随机整数
+ * ## 生成随机整数
  * @param min
  * @param max
  * @returns {number}
@@ -604,7 +663,7 @@ function randomInt(min, max){
 }
 
 /**
- * 生成随机整数
+ * ## 生成随机整数
  * @param min
  * @param max
  * @returns {number}
