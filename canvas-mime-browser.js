@@ -55,16 +55,16 @@ class CanvasMine {
             heightItem: 20, // 每个子元素的高度值
             gapCategoryY: 30, // 每个类别的上下间隔
             mainTopic: {
-                strokeStyle: '#555',
-                lineWidth: 10,
+                strokeStyle: '#000',
+                lineWidth: 6,
                 radius: 120, // 中心元素的圆形 radius
                 name: name, // 标题名
                 font: 'bold 40px 微软雅黑'
             },
             category: {
-                textWidth: 150, // 文字宽度
-                tailDistance: 85, // 弯折点 距离线段末端的距离
                 lineDistance: 400, // 横向宽度
+                tailDistance: 70, // 弯折点 距离线段末端的距离
+                textWidth: 150, // 文字宽度
                 gapY: 200,  // 初始值，后面会重新赋值
                 radius: 15, // 线段圆角
                 strokeStyle: '#333',
@@ -75,8 +75,8 @@ class CanvasMine {
                 font: '28px 微软雅黑',
             },
             thing: {
-                lineDistance: 300, // 横向宽度
-                tailDistance: 70, // 弯折点 距离线段末端的距离
+                lineDistance: 250, // 横向宽度
+                tailDistance: 50, // 弯折点 距离线段末端的距离
                 gapY: 200,  // 初始值，后面会重新赋值
                 radius: 5, // 线段圆角
                 strokeStyle: '#333',
@@ -101,8 +101,8 @@ class CanvasMine {
             width : 1920 * 2,
             height: 1080 * 2,
         }
-        this.center =  {
-            x: 600,
+        this.originPoint =  {
+            x: 150,
             y: 150
         }
 
@@ -222,12 +222,12 @@ class CanvasMine {
             // Center 的主要作用是标记每列的起点 x 值
             if (index === 0){
                 col.center = {
-                    x: this.center.x + this.offsetBetweenFirstColumnCap,
-                    y: this.center.y
+                    x: this.originPoint.x + this.offsetBetweenFirstColumnCap,
+                    y: this.originPoint.y
                 }
             } else {
                 col.center =  {
-                    x: this.center.x + this.offsetBetweenFirstColumnCap + this.colWidth * index,
+                    x: this.originPoint.x + this.offsetBetweenFirstColumnCap + this.colWidth * index,
                     // x: this.center.x + this.colWidth * index,
                     y: this.colArray[index - 1].categories[0].midLineY // 前一个类别的中心点
                         + this.colArray[index - 1].categories[0].height / 2 // 前一个类别的半个高
@@ -243,8 +243,8 @@ class CanvasMine {
         this.frame.height = document.documentElement.clientHeight * 2
         this.frame.width = document.documentElement.clientWidth * 2
 
-        this.center = {
-            x: 300,
+        this.originPoint = {
+            x: 120 + this.option.mainTopic.radius,  // 标题 与 页面左边的距离
             y: this.frame.height / 2
         }
 
@@ -272,8 +272,9 @@ class CanvasMine {
          */
         // 标题背景
         ctx.save()
-        ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)  // 移动到圆的右侧点
-        ctx.arc(this.center.x, this.center.y, this.option.mainTopic.radius, 0, Math.PI * 2,)
+        ctx.moveTo(this.originPoint.x + this.option.mainTopic.radius, this.originPoint.y)  // 移动到圆的右侧点
+        ctx.beginPath()
+        ctx.arc(this.originPoint.x, this.originPoint.y, this.option.mainTopic.radius, 0, Math.PI * 2,)
         ctx.strokeStyle = this.option.mainTopic.strokeStyle
         // ctx.shadowColor = 'rgba(0,0,0,0.8)'
         // ctx.shadowBlur = 10
@@ -287,9 +288,9 @@ class CanvasMine {
         // 标题名
         ctx.fillStyle = 'black'
         ctx.textAlign = 'center'
-        ctx.font =  this.option.mainTopic.font
+        ctx.font = this.option.mainTopic.font
         ctx.textBaseline = 'middle'
-        ctx.fillText(this.option.mainTopic.name, this.center.x, this.center.y)
+        ctx.fillText(this.option.mainTopic.name, this.originPoint.x, this.originPoint.y)
         ctx.restore()
 
         // 1. 遍历分列
@@ -298,15 +299,18 @@ class CanvasMine {
             // 标题 与 第一列之间的连线
             if (indexCol === 0){
                 let originPoint = {
-                    x: this.center.x + this.option.mainTopic.radius,  // 移动到标题圆的右边点
-                    y: this.center.y
+                    x: this.originPoint.x
+                        + this.option.mainTopic.radius  //  + radius
+                        + this.option.mainTopic.lineWidth / 2, // 从圆的边缘开始绘制，也要算上这个边框的宽度
+                    y: this.originPoint.y
                 }
                 let tempStartPoint1 = {
-                    x: this.center.x + this.offsetBetweenFirstColumnCap,
-                    y: this.center.y
+                    x: this.originPoint.x + this.offsetBetweenFirstColumnCap,
+                    y: this.originPoint.y
                 }
                 ctx.save()
                 ctx.lineWidth = this.option.category.lineWidth
+                ctx.beginPath()
                 ctx.moveTo(originPoint.x, originPoint.y)
                 ctx.lineTo(tempStartPoint1.x, tempStartPoint1.y)
                 ctx.stroke()
@@ -359,7 +363,7 @@ class CanvasMine {
                 ctx.fillText(
                     titleCategory,
                     pointEndCategory.x + this.option.category.textWidth / 2,
-                    pointEndCategory.y - 8,
+                    pointEndCategory.y - (this.isShowPrice? 8: 0),
                     this.option.category.textWidth
                 )
 
@@ -374,7 +378,7 @@ class CanvasMine {
 
                         // -10 是为了抵消 ￥ 这个符号所占的空间，好让其它居中显示
                         pointEndCategory.x + this.option.category.textWidth / 2 - 10,
-                        pointEndCategory.y + this.option.priceStyle.height - 8,
+                        pointEndCategory.y + this.option.priceStyle.height - (this.isShowPrice? 8: 0),
                         this.option.category.textWidth
                     )
                 }

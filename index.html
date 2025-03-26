@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>我的所有物品</title>
-    <script src="canvas-mime-browser.js?v=20250317114709"></script>
+    <script src="canvas-mime-browser.js?v=20250326170734"></script>
     <script src="./js-yaml.min.js"></script>
     <script>
         const THINGS_YAML = `
@@ -130,7 +130,6 @@
 - name: 车载东西
   children:
     - name: 70迈行车记录仪
-      important: true
       price: 369
     - name: 支付宝 ETC
       price: 0
@@ -345,7 +344,7 @@
             4,
             700,
             false,  // show index
-            true,   // show canvas info
+            false,   // show canvas info
             true    // show price
         )
 
