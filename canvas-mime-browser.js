@@ -21,10 +21,10 @@
 class CanvasMine {
     /**
      * ## CanvasMine
-     * @param name String主题名
+     * @param name String标题名
      * @param categoryAll
      * @param colCount Number 展示为多少列
-     * @param colOffsetX Number 列之间的间隔
+     * @param colWidth Number 列之间的间隔
      * @param isShowSerialNumber Boolean 是否显示序号
      * @param isShowCanvasInfo Boolean 是否显示 canvas 信息
      * @param isShowPrice Boolean
@@ -33,7 +33,7 @@ class CanvasMine {
         name,
         categoryAll,
         colCount,
-        colOffsetX,
+        colWidth,
         isShowSerialNumber,
         isShowCanvasInfo,
         isShowPrice,
@@ -45,9 +45,9 @@ class CanvasMine {
         this.isShowPrice = isShowPrice
 
         this.colCount = colCount || 2       // 展示为多少列
-        this.colOffsetX = colOffsetX || 700 // 列之间的间隔
+        this.colWidth = colWidth || 700 // 列之间的间隔
 
-        this.offsetBetweenFirstColumnCap = 200 // 第一列与主题文字之间的距离
+        this.offsetBetweenFirstColumnCap = 200 // 第一列与标题文字之间的距离
 
         this.bgColor = 'white'
         this.option = {
@@ -58,15 +58,15 @@ class CanvasMine {
                 strokeStyle: '#555',
                 lineWidth: 10,
                 radius: 120, // 中心元素的圆形 radius
-                name: name, // 主题名
+                name: name, // 标题名
                 font: 'bold 40px 微软雅黑'
             },
             category: {
                 textWidth: 150, // 文字宽度
-                tailDistance: 85, // 弯折位置位于末端多远处
-                gapX: 400, // 横向宽度
-                gapY: 200,
-                radius: 20, // 线段圆角
+                tailDistance: 85, // 弯折点 距离线段末端的距离
+                lineDistance: 400, // 横向宽度
+                gapY: 200,  // 初始值，后面会重新赋值
+                radius: 15, // 线段圆角
                 strokeStyle: '#333',
                 textColor: 'black',
                 textColorImportant: 'red',
@@ -75,9 +75,9 @@ class CanvasMine {
                 font: '28px 微软雅黑',
             },
             thing: {
-                gapX: 300, // 横向宽度
-                tailDistance: 70, // 弯折位置位于末端多远处
-                gapY: 200,
+                lineDistance: 300, // 横向宽度
+                tailDistance: 70, // 弯折点 距离线段末端的距离
+                gapY: 200,  // 初始值，后面会重新赋值
                 radius: 5, // 线段圆角
                 strokeStyle: '#333',
                 textColor: '#333',
@@ -87,7 +87,8 @@ class CanvasMine {
                 font: '24px 微软雅黑',
                 fontImportant: 'bold 24px 微软雅黑',
             },
-            priceFont: {
+            priceStyle: {
+                height: 35,
                 textColor: '#5e5e5e',
                 font: '22px 微软雅黑',
             },
@@ -100,7 +101,7 @@ class CanvasMine {
             width : 1920 * 2,
             height: 1080 * 2,
         }
-        this.center=  {
+        this.center =  {
             x: 600,
             y: 150
         }
@@ -111,6 +112,7 @@ class CanvasMine {
         this.lastTime = new Date().getTime() // 用于计算每帧用时
 
         this.init()
+
         window.onresize = () => {
             this.frame.height = innerHeight * 2
             this.frame.width = innerWidth * 2
@@ -164,6 +166,16 @@ class CanvasMine {
             )
         }
 
+        // 计算每列应该的宽度值
+        //  = (宽度 - padding - 第一列与标题的距离) / colCount
+        this.colWidth = (
+            this.frame.width
+            - this.option.containerPadding * 2  // padding
+            - this.offsetBetweenFirstColumnCap  // 第一列与 mainTopic 的距离
+            - this.option.mainTopic.radius * 2  // mainTopic 的圆圈宽度
+        ) / this.colCount
+
+
         // 将内容均分到各组中
         this.categoryAll.forEach(item => {
             // 每遍历一个，都排序一下，找出最少元素的那一列，新的一个将添加到最少那一排中
@@ -194,7 +206,7 @@ class CanvasMine {
             (maxCategoryCountInCol - 1) * this.option.gapCategoryY // 每列
         ) / maxCount
 
-        // 计算每个区块的高度、中心点
+        // 计算每个类别的高度、中心点
         this.colArray.forEach((col, index) => {
             let heightAmountOfCol = 0 // 总高度
             let lastYPos = this.option.containerPadding  // 纵向最后的坐标，初始值为 padding
@@ -206,13 +218,19 @@ class CanvasMine {
                 // category's middle line y pos
                 category.midLineY = lastYPos - category.height / 2
             })
+
+            // Center 的主要作用是标记每列的起点 x 值
             if (index === 0){
-                col.center = this.center
+                col.center = {
+                    x: this.center.x + this.offsetBetweenFirstColumnCap,
+                    y: this.center.y
+                }
             } else {
                 col.center =  {
-                    x: this.center.x + this.colOffsetX * index,
-                    y: this.colArray[index - 1].categories[0].midLineY // 第一个类别的中心点
-                        + this.colArray[index - 1].categories[0].height / 2 // 第一个类别的半个高
+                    x: this.center.x + this.offsetBetweenFirstColumnCap + this.colWidth * index,
+                    // x: this.center.x + this.colWidth * index,
+                    y: this.colArray[index - 1].categories[0].midLineY // 前一个类别的中心点
+                        + this.colArray[index - 1].categories[0].height / 2 // 前一个类别的半个高
                         + this.option.heightItem / 2 // 加类别之间的间隔的一半
                 }
             }
@@ -226,10 +244,7 @@ class CanvasMine {
         this.frame.width = document.documentElement.clientWidth * 2
 
         this.center = {
-            x: (
-                this.frame.width -
-                (this.colOffsetX - 280) * 2 * this.colCount
-            ) / 2, // 300 大约是两个列之间重叠的部分
+            x: 300,
             y: this.frame.height / 2
         }
 
@@ -252,7 +267,10 @@ class CanvasMine {
         ctx.fillRect(0,0,this.frame.width, this.frame.height)
         ctx.restore()
 
-        // Cap Title - bg
+        /**
+         * 绘制标题
+         */
+        // 标题背景
         ctx.save()
         ctx.moveTo(this.center.x + this.option.mainTopic.radius, this.center.y)  // 移动到圆的右侧点
         ctx.arc(this.center.x, this.center.y, this.option.mainTopic.radius, 0, Math.PI * 2,)
@@ -266,7 +284,7 @@ class CanvasMine {
         ctx.fill()
         ctx.stroke()
 
-        // Cap Title - text title
+        // 标题名
         ctx.fillStyle = 'black'
         ctx.textAlign = 'center'
         ctx.font =  this.option.mainTopic.font
@@ -275,11 +293,12 @@ class CanvasMine {
         ctx.restore()
 
         // 1. 遍历分列
-        this.colArray.forEach((col, index) => {
-            // 主题 与 第一列之间的连线
-            if (index === 0){
+        this.colArray.forEach((col, indexCol) => {
+
+            // 标题 与 第一列之间的连线
+            if (indexCol === 0){
                 let originPoint = {
-                    x: this.center.x + this.option.mainTopic.radius,  // 移动到主题圆的右边点
+                    x: this.center.x + this.option.mainTopic.radius,  // 移动到标题圆的右边点
                     y: this.center.y
                 }
                 let tempStartPoint1 = {
@@ -297,22 +316,23 @@ class CanvasMine {
 
             // 2. 遍历列中的类别
             col.categories.forEach((category, indexCategory) => {
-                let startPoint1 = {x: 0, y: 0}
-                let endPoint1 = {x: 0, y: 0}
+                let pointStartCategory = {x: 0, y: 0}
+                let pointEndCategory = {x: 0, y: 0}
+
                 // 第一列的特殊样式
-                if (index === 0){
-                    startPoint1 = {
-                        x: this.center.x + this.offsetBetweenFirstColumnCap,
-                        y: this.center.y
-                    }
-                    endPoint1 = {
-                        x: startPoint1.x + 200,
+                if (indexCol === 0){
+                    pointStartCategory = this.colArray[indexCol].center
+                    pointEndCategory = {
+                        x: pointStartCategory.x + this.offsetBetweenFirstColumnCap,  // 起点距离第一列的直线距离
                         y: category.midLineY
                     }
                 } else {
-                    startPoint1 = this.colArray[index].center
-                    endPoint1 = {
-                        x: startPoint1.x + this.colOffsetX,
+                    pointStartCategory = {
+                        x: this.colArray[indexCol - 1].center.x + this.offsetBetweenFirstColumnCap,
+                        y: this.colArray[indexCol].center.y
+                    }
+                    pointEndCategory = {
+                        x: pointStartCategory.x + this.colWidth,
                         y: category.midLineY
                     }
                 }
@@ -320,7 +340,7 @@ class CanvasMine {
                 if (this.option.category.dotSize){
                     drawDot(
                         ctx,
-                        endPoint1,
+                        pointEndCategory,
                         this.option.category.dotSize,
                         this.option.category.lineWidth,
                         this.option.category.strokeStyle,
@@ -338,35 +358,41 @@ class CanvasMine {
                     category.name
                 ctx.fillText(
                     titleCategory,
-                    endPoint1.x + this.option.category.textWidth / 2,
-                    endPoint1.y,
+                    pointEndCategory.x + this.option.category.textWidth / 2,
+                    pointEndCategory.y - 8,
                     this.option.category.textWidth
                 )
 
                 if (this.isShowPrice){
                     // 价格 - 类别
-                    ctx.fillStyle = this.option.priceFont.textColor
-                    ctx.font = this.option.priceFont.font
+                    ctx.fillStyle = this.option.priceStyle.textColor
+                    ctx.font = this.option.priceStyle.font
                     ctx.textBaseline = 'middle'
                     ctx.textAlign = 'center'
                     ctx.fillText(
                         `￥${category.price}`,
-                        endPoint1.x + this.option.category.textWidth / 2,
-                        endPoint1.y + 30,
+
+                        // -10 是为了抵消 ￥ 这个符号所占的空间，好让其它居中显示
+                        pointEndCategory.x + this.option.category.textWidth / 2 - 10,
+                        pointEndCategory.y + this.option.priceStyle.height - 8,
                         this.option.category.textWidth
                     )
                 }
 
-
                 // 动画
-                let cornerRadius1 = 0
+                let radiusCategory = 0
                 if (this.timeLine > this.animationDuration){
-                    cornerRadius1 = this.option.category.radius
+                    radiusCategory = this.option.category.radius
                 } else {
-                    cornerRadius1 = this.option.category.radius / this.animationDuration * this.timeLine
+                    radiusCategory = this.option.category.radius / this.animationDuration * this.timeLine
                 }
-                this.colArray[index].foldX = drawArcLine(ctx,
-                    startPoint1, endPoint1, cornerRadius1,
+
+                // 绘制连接至 category 的线段
+                this.colArray[indexCol].bendX = drawArcLine(
+                    ctx,
+                    pointStartCategory,
+                    pointEndCategory,
+                    radiusCategory,
                     this.option.category.tailDistance,
                     this.option.category.lineWidth,
                     this.option.category.strokeStyle
@@ -375,12 +401,12 @@ class CanvasMine {
 
                 // 3. 遍历类别中的子元素
                 category.children.forEach((thing, indexThing) => {
-                    let endPoint2 = {
-                        x: endPoint1.x + this.option.thing.gapX,
-                        y: getYPositionOf(endPoint1.y, category.children.length, this.option.heightItem, indexThing)
+                    let pointEndThing = {
+                        x: pointEndCategory.x + this.option.thing.lineDistance,
+                        y: getYPositionOf(pointEndCategory.y, category.children.length, this.option.heightItem, indexThing)
                     }
                     if (this.option.thing.dotSize){
-                        drawDot(ctx, endPoint2, this.option.thing.dotSize, this.option.thing.lineWidth, this.option.thing.strokeStyle, this.option.thing.strokeStyle)
+                        drawDot(ctx, pointEndThing, this.option.thing.dotSize, this.option.thing.lineWidth, this.option.thing.strokeStyle, this.option.thing.strokeStyle)
                     }
                     // 物品名字
                     ctx.fillStyle = thing.important? this.option.thing.textColorImportant: this.option.thing.textColor
@@ -404,28 +430,28 @@ class CanvasMine {
                     if (indexThing * 10 < this.timeLine){
                         ctx.fillText(
                             titleThing,
-                            endPoint2.x + 10,
-                            endPoint2.y
+                            pointEndThing.x + 10,
+                            pointEndThing.y
                         )
                     }
 
-                    let startPoint2 = {
-                        x: endPoint1.x + this.option.category.textWidth,
-                        y: endPoint1.y
+                    let pointStartThing = {
+                        x: pointEndCategory.x + this.option.category.textWidth,
+                        y: pointEndCategory.y
                     }
-                    let cornerRadius2 = 0
+                    let radiusThing = 0
                     if (this.timeLine > this.animationDuration){
-                        cornerRadius2 = this.option.thing.radius
+                        radiusThing = this.option.thing.radius
                         this.animationStop()
                     } else {
-                        cornerRadius2 = this.option.thing.radius / this.animationDuration * this.timeLine
+                        radiusThing = this.option.thing.radius / this.animationDuration * this.timeLine
                     }
                     if (indexThing * 10 < this.timeLine) {
                         drawArcLine(
                             ctx,
-                            startPoint2 ,
-                            endPoint2,
-                            cornerRadius2,
+                            pointStartThing ,
+                            pointEndThing,
+                            radiusThing,
                             this.option.thing.tailDistance,
                             this.option.thing.lineWidth,
                             this.option.thing.strokeStyle
@@ -435,11 +461,11 @@ class CanvasMine {
             })
 
             // 4. 最后将未连接的 2.3.4.. 列连接到上一级连线上
-            if (index === 0){
+            if (indexCol === 0){
 
             } else {
                 let categoryStartPoint = {
-                    x: this.colArray[index - 1].foldX,
+                    x: this.colArray[indexCol - 1].bendX,
                     y: col.center.y
                 }
                 ctx.save()
@@ -566,17 +592,18 @@ function getYPositionOf(middleLineY, itemSize, gap, index){
 /**
  * ## 在 a 与 d 点之间线一条带圆角的拆线
  * @param ctx canvas.context
- * @param pointA {{x: Number, y: Number}} 起点坐标
- * @param pointD {{x: Number, y: Number}} 末端坐标
+ * @param pointStart {{x: Number, y: Number}} 起点坐标
+ * @param pointEnd {{x: Number, y: Number}} 末端坐标
  * @param radius  { Number } 圆角半径
  * @param endLineLength  { Number } 末端线段长度
  * @param lineWidth { Number } 线段宽度
  * @param lineColor  { String } 线段颜色
+ * @return bendX { Number }
  */
 function drawArcLine(
     ctx,
-    pointA,
-    pointD,
+    pointStart,
+    pointEnd,
     radius,
     endLineLength,
     lineWidth,
@@ -586,28 +613,24 @@ function drawArcLine(
     ctx.lineCap = 'round'
     ctx.beginPath()
     ctx.lineJoin = 'round'
-    ctx.moveTo(pointA.x, pointA.y)
-    let foldX = pointA.x + (pointD.x - pointA.x - endLineLength)
+    ctx.moveTo(pointStart.x, pointStart.y)
+    let bendX = pointStart.x + (pointEnd.x - pointStart.x - endLineLength)
     ctx.arcTo(
-        foldX,
-        pointA.y,
-        foldX,
-        pointD.y,
+        bendX, pointStart.y,
+        bendX, pointEnd.y,
         radius
     )
     ctx.arcTo(
-        foldX,
-        pointD.y,
-        pointD.x,
-        pointD.y,
+        bendX,    pointEnd.y,
+        pointEnd.x, pointEnd.y,
         radius
     )
-    ctx.lineTo(pointD.x, pointD.y)
+    ctx.lineTo(pointEnd.x, pointEnd.y)
     ctx.strokeStyle = lineColor
     ctx.lineWidth = lineWidth
     ctx.stroke()
     ctx.restore()
-    return foldX
+    return bendX
 }
 
 
