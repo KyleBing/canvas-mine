@@ -56,7 +56,7 @@ class CanvasMine {
             gapCategoryY: 30, // 每个类别的上下间隔
             mainTopic: {
                 strokeStyle: '#000',
-                lineWidth: 6,
+                lineWidth: 4,
                 radius: 120, // 中心元素的圆形 radius
                 name: name, // 标题名
                 font: 'bold 40px 微软雅黑'
