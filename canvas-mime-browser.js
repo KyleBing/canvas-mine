@@ -63,7 +63,7 @@ class CanvasMine {
             },
             category: {
                 lineDistance: 400, // 横向宽度
-                tailDistance: 70, // 弯折点 距离线段末端的距离
+                tailDistance: 100, // 弯折点 距离线段末端的距离
                 textWidth: 150, // 文字宽度
                 gapY: 200,  // 初始值，后面会重新赋值
                 radius: 15, // 线段圆角
@@ -434,7 +434,7 @@ class CanvasMine {
                     if (indexThing * 10 < this.timeLine){
                         ctx.fillText(
                             titleThing,
-                            pointEndThing.x + 10,
+                            pointEndThing.x + 13,
                             pointEndThing.y
                         )
                     }
