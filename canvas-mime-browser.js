@@ -75,6 +75,10 @@ class CanvasMine {
                 font: '24px 微软雅黑',
                 fontImportant: 'bold 24px 微软雅黑',
             },
+            priceFont: {
+                textColor: '#5e5e5e',
+                font: '22px 微软雅黑',
+            },
         }
 
         this.separateArrays = [] // {name: 'left', attaches: [], countItems: 0},
@@ -312,6 +316,18 @@ class CanvasMine {
                     this.option.level1.textWidth
                 )
 
+                // 一级文字 价格
+                ctx.fillStyle = this.option.priceFont.textColor
+                ctx.font = this.option.priceFont.font
+                ctx.textBaseline = 'middle'
+                ctx.textAlign = 'center'
+                ctx.fillText(
+                    `￥${item1Level.price}`,
+                    endPoint1.x + this.option.level1.textWidth / 2,
+                    endPoint1.y + 30,
+                    this.option.level1.textWidth
+                )
+
                 let cornerRadius1 = 0
                 if (this.timeLine > this.animationDuration){
                     cornerRadius1 = this.option.level1.radius
@@ -340,9 +356,15 @@ class CanvasMine {
                     ctx.font = item2Level.isImportant? this.option.level2.fontImportant : this.option.level2.font
                     ctx.textBaseline = 'middle'
                     ctx.textAlign = 'left'
+                    let priceText = ''
+                    if (item2Level.price === undefined) {
+                        priceText = ''
+                    } else {
+                        priceText = ' - ￥' + item2Level.price
+                    }
                     let textLevel2 = this.isShowSerialNumber ?
                         `${index2 + 1}. ${item2Level.name}`:
-                        item2Level.name
+                        `${item2Level.name}${priceText}`
                     if (index2 * 10 < this.timeLine){
                         ctx.fillText(
                             textLevel2,
