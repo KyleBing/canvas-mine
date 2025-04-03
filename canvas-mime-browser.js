@@ -252,6 +252,13 @@ class CanvasMine {
         document.documentElement.append(canvasLayer)
         this.updateFrameAttribute(canvasLayer)
 
+
+        // calculate price sum
+        this.priceSum = this.categoryAll.reduce((sum, item) => sum + (item.price || 0), 0)
+        let priceSumArray = Array.from(String(this.priceSum))
+        priceSumArray.splice(priceSumArray.length - 4, 0,',')
+        this.priceSumString = priceSumArray.join('')
+
         this.draw()
     }
 
@@ -284,6 +291,20 @@ class CanvasMine {
         ctx.lineWidth = this.option.mainTopic.lineWidth
         ctx.fill()
         ctx.stroke()
+
+        if (this.isShowPrice){
+            // 价格 - 类别
+            ctx.fillStyle = this.option.priceStyle.textColor
+            ctx.font = this.option.priceStyle.font
+            ctx.textBaseline = 'middle'
+            ctx.textAlign = 'center'
+            ctx.fillText(
+                `￥${this.priceSumString}`,
+                this.originPoint.x - 6,
+                this.originPoint.y + this.option.priceStyle.height,
+                this.option.category.textWidth
+            )
+        }
 
         // 标题名
         ctx.fillStyle = 'black'

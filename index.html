@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>我的所有物品</title>
-    <script src="canvas-mime-browser.js?v=20250326172033"></script>
+    <script src="canvas-mime-browser.js?v=20250403173919"></script>
     <script src="./js-yaml.min.js"></script>
     <script>
         const THINGS_YAML = `
+
 - name: 证件
   children:
     - name: 身份证
@@ -68,6 +69,8 @@
     - name: GoPro Black 12
       price: 2000
     - name: GoPro 延长杆
+    - name: GoPro 麦克风配件
+      price: 168
     - name: 泰迅头盔支架
       price: 0
     - name: 泰迅项圈支架
@@ -107,6 +110,7 @@
     - name: 网球
     - name: 裤子n条
     - name: 雪地鞋
+      price: 299
     - name: 跑步鞋
       price: 350
     - name: 篮球鞋
@@ -120,9 +124,11 @@
     - name: 充气垫子
       price: 250
     - name: 瑜伽垫子
+      price: 150
     - name: 小背包
     - name: 小斜挎包
     - name: 轮滑鞋MF900
+      price: 799
     - name: 水壶
     - name: 自行车水壶
     - name: 防水袋
@@ -149,11 +155,14 @@
     - name: 小米中性笔
     - name: 小米人体传感器
     - name: 小米小夜灯
-    - name: 小米插线板6口
+    - name: 小米插线板8口
+      price: 40
+    - name: 小米插线板8口
+      price: 40
     - name: 小米插线板5口5开关
     - name: 小米充电宝
+      price: 128
     - name: 小米立式无线充
-    - name: 小米躺式无线充
     - name: 小米剃须刀
     - name: 小米指甲刀
     - name: 小米袪味喷雾
@@ -163,15 +172,17 @@
     - name: 小米电动牙刷
     - name: 小米除球机
     - name: 小米精密螺丝刀
+      price: 85
     - name: 小米家用螺丝刀
     - name: 小米充电头C口33w
     - name: 小米充电头C口45w
-      price: 45
+      price: 69
     - name: 小米充电头A口20w
     - name: 小米电源延长线5m
     - name: 小米雨伞
       price: 79
     - name: 小米U盘
+      price: 99
 - name: 小米-大
   children:
     - name: 小米轻音破壁料理机
@@ -182,6 +193,7 @@
     - name: 小米空气净化器
       price: 999
     - name: 小米路由器 AX3000
+      price: 309
     - name: 小爱音箱
     - name: 小米空调
       price: 2099
@@ -189,12 +201,14 @@
       price: 999
     - name: 小米桌面风扇
       price: 129
-    - name: 小米电水壶
+    - name: 小米恒温水壶
+      price: 139
     - name: 小米风扇
       price: 299
     - name: 小米台灯 Pro
       price: 299
-    - name: 小米云摄像头
+    - name: 小米2k摄像头
+      price: 199
     - name: 小米床头灯
       price: 129
     - name: 小米体重秤
@@ -215,6 +229,11 @@
     - name: 杯刷
     - name: 锅刷
     - name: 盐瓶
+      price: 29
+    - name: 水果刀
+      price: 30
+    - name: 煎锅-碳钢
+      price: 129
     - name: 电竞椅 玛赤佩
       price: 999
     - name: 桌子 贝肯特
@@ -228,9 +247,16 @@
     - name: 吸盘支架-角
     - name: 吸盘支架-小
     - name: 吸盘支架-浴室
-    - name: 水果刀
+    - name: 枕头
+      price: 199
+    - name: 垃圾桶
+      price: 30
     - name: 蒸锅
       price: 294
+    - name: 被子-微暖
+      price: 99
+    - name: 床垫-托列
+      price: 499
 - name: 工具
   children:
     - name: 螺丝刀
@@ -247,12 +273,13 @@
       price: 400
     - name: 头盔
       price: 400
-    - name: 自行车头盔
     - name: 赛羽护膝
 - name: 数码
   children:
     - name: 喵喵机单词卡
       price: 128
+    - name: 路由器 SFT 1200
+      price: 120
     - name: 绿联 MagSafe 充电支架
     - name: 高驰 Apex2
       price: 2500
@@ -294,15 +321,18 @@
 - name: 生活
   children:
     - name: 垃圾桶
+      price: 30
     - name: 拖把
     - name: 扫把
-    - name: 普通水果刀
     - name: 张小泉菜刀
+      price: 139
     - name: 磨石400/1000目
     - name: 磨石120/240目
     - name: 磨石120/240目
     - name: 杯子-万达影城
+      price: 0
     - name: 双节棍-黑檀
+      price: 138
     - name: 筷子两双
     - name: 饭铲
 - name: 其它
@@ -321,9 +351,9 @@
     - name: Miyoo A30
       price: 259
     - name: TrimUI Smart Pro
-      price: 379
-    - name: TrimUI Brick
       price: 444
+    - name: TrimUI Brick
+      price: 379
 - name: 财富
   children:
     - name: 金币 20g 金玉满堂
@@ -331,6 +361,7 @@
     - name: 金币 20g 立体兔头
       price: 13294
     - name: 金豆 2g
+
 
 `
         let thingArray = jsyaml.load(THINGS_YAML)
