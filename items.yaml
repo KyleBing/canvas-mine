@@ -7,10 +7,10 @@
   children:
     - name: 大众 速腾
       price: 45000
-    - name: 铃木 GSX250R
-      price: 28000
+    - name: 本田 CBR650R
+      price: 72800
     - name: 九号 E125(双电)
-      price: 15000
+      price: 6000
 - name: 摄影
   children:
     - name: 佳能相机 R6II 套机
@@ -21,6 +21,8 @@
       price: 2800
     - name: Ulanzi MT-63 三脚架
       price: 300
+    - name: 大疆 RS4 云台
+      price: 2499
     - name: 斯莫格补光灯RC60B
       price: 600
     - name: 斯莫格补光灯RC60Bc柔光箱
@@ -263,6 +265,12 @@
       price: 400
     - name: 头盔
       price: 400
+    - name: REVIT 冬季骑行服
+      price: 1300
+    - name: REVIT 夏季骑行服
+      price: 1170
+    - name: Taichi 夏季手套
+      price: 400
     - name: 赛羽护膝
 - name: 数码
   children:
@@ -338,8 +346,6 @@
     - name: 车模 - CBR600R
 - name: 开源掌机
   children:
-    - name: Miyoo A30
-      price: 259
     - name: TrimUI Smart Pro
       price: 444
     - name: TrimUI Brick
